@@ -2,6 +2,8 @@ import { useEffect, useState } from "react";
 import { getEvents } from "../api/events";
 import type { Event } from "../types/Event";
 import { useNavigate } from "react-router-dom";
+import EventCard from "../components/EventCard";
+
 
 export default function EventsList() {
   const navigate = useNavigate();
@@ -10,6 +12,10 @@ export default function EventsList() {
   useEffect(() => {
     getEvents().then(setEvents);
   }, []);
+
+  const handleDeleteFromList =(id:number)=>{
+    setEvents((prev)=>prev.filter((e)=>e.id !==id));
+  ;}
 
   return (
     <>
@@ -24,13 +30,13 @@ export default function EventsList() {
         </div>
 
         <h1 className="text-3xl font-bold mb-6">Eventi in Programma</h1>
-        <div className="space-y-4">
+        <div className="space-y-6">
           {events.map((event) => (
-            <div key={event.id}>
-              <h2 className="text-xl font-semibold">{event.title}</h2>
-              <p className="text-gray-600">{event.date}</p>
-              <p className="mt-2">{event.description}</p>
-            </div>
+            <EventCard 
+            key={event.id}
+            event = {event}
+            onDelete ={handleDeleteFromList}
+            />
           ))}
         </div>
       </div>

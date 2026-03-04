@@ -5,4 +5,5 @@ export interface Event {
     city:string;
     category:string;
     description:string;
+    image: string;
 }

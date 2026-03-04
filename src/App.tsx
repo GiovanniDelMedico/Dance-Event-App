@@ -1,6 +1,7 @@
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import EventsList from "./pages/EventList";
 import EventCreate from "./pages/EventCreate";
+import EventEdit from "./pages/EventEdit";
 
 
 function App() {
@@ -11,6 +12,7 @@ function App() {
        
         <Route path="/" element={<EventsList />} />
         <Route path="/create"  element={<EventCreate/>}/>
+        <Route path="/edit/:id" element={<EventEdit />} />
       </Routes>
     </BrowserRouter>
   );
