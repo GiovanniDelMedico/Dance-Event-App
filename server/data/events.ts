@@ -1,4 +1,6 @@
-export const events = [
+import type { Event } from "../types/Event.js";
+
+export const events:Event[] = [
   {
     id: 1,
     title: "Concerto a Bologna",
