@@ -2,13 +2,26 @@ import { useState } from "react";
 import type { Event } from "../types/Event";
 
 interface EventFormProps {
-  initialValues: Omit<Event, "id">;
+  initialValues?: Omit<Event, "id">;
   onSubmit: (data: Omit<Event, "id">) => Promise<void>;
   submitLabel: string;
 }
 
-export default function EventForm({ initialValues, onSubmit, submitLabel }: EventFormProps) {
-  const [formData, setFormData] = useState<Omit<Event, "id">>(initialValues);
+export default function EventForm({
+  initialValues,
+  onSubmit,
+  submitLabel,
+}: EventFormProps) {
+  const [formData, setFormData] = useState<Omit<Event, "id">>(
+    initialValues || {
+      title: "",
+      date: "",
+      city: "",
+      category: "",
+      description: "",
+      image: "",
+    },
+  );
 
   const handleChange = (field: keyof Omit<Event, "id">, value: string) => {
     setFormData((prev) => ({ ...prev, [field]: value }));

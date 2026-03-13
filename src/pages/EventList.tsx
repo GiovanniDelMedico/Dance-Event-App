@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { getEvents } from "../api/events";
+import { getEvents,deleteEvent } from "../api/events";
 import type { Event } from "../types/Event";
 import { useNavigate } from "react-router-dom";
 import EventCard from "../components/EventCard";
@@ -13,9 +13,10 @@ export default function EventsList() {
     getEvents().then(setEvents);
   }, []);
 
-  const handleDeleteFromList =(id:number)=>{
+  const handleDeleteFromList = async (id:number)=>{
+    await deleteEvent(id);
     setEvents((prev)=>prev.filter((e)=>e.id !==id));
-  ;}
+  ;};
 
   return (
     <>

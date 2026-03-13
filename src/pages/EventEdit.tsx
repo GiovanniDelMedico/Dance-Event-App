@@ -8,6 +8,7 @@ export default function EventEdit() {
   const navigate = useNavigate();
   const { id } = useParams();
   const eventId = Number(id);
+  console.log("ID ricevuto dal router:", id, "eventId:", eventId);
 
   const [initialValues, setInitialValues] = useState<Omit<Event, "id"> | null>(null);
 
@@ -17,9 +18,11 @@ export default function EventEdit() {
       if (found) {
         const { id, ...rest } = found;
         setInitialValues(rest);
+      } else {
+        navigate("/");
       }
     });
-  }, [eventId]);
+  }, [eventId,navigate]);
 
   if (!initialValues) return <p>Caricamento...</p>;
 

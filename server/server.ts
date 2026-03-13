@@ -1,11 +1,19 @@
 import express from "express";
 import { events } from "./data/events.js";
 import type { Event } from "./types/Event.js";
+import cors from "cors";
 
+console.log(">>> QUESTO È server.ts <<<");
 
 const app = express();
 const PORT = 3000;
 
+
+app.use(
+  cors({
+    origin: "http://localhost:5173",
+  })
+);
 app.use(express.json());
 
 app.get("/", (req, res) => {
@@ -61,6 +69,33 @@ app.post("/events", (req, res) => {
 
   res.status(201).json(newEvent);
 });
+
+console.log(">>> ROUTE PUT REGISTRATA <<<");
+
+app.put("/events/:id", (req, res) => {
+   console.log(">>> PUT /events/:id RICEVUTA <<<");
+  const id = Number(req.params.id);
+  const updatedData = req.body;
+
+  const index = events.findIndex((e) => e.id === id);
+  if (index === -1) {
+    return res.status(404).json({ error: "Evento non trovato" });
+  }
+
+  // Ricostruisco l'evento aggiornato
+  const updatedEvent: Event = {
+    id,
+    ...updatedData,
+  };
+
+  // Sostituisco l'evento nell'array
+  events[index] = updatedEvent;
+
+  res.json(updatedEvent);
+ 
+
+});
+ 
 
 
 app.listen(PORT, () => {

@@ -1,6 +1,7 @@
 import { useNavigate } from "react-router-dom";
 import { createEvent } from "../api/events";
 import EventForm from "../components/EventForm";
+import type { Event } from "../types/Event";
 
 export default function EventCreate() {
   const navigate = useNavigate();
@@ -14,7 +15,7 @@ export default function EventCreate() {
     image: ""
   };
 
-  const handleSubmit = async (data: typeof initialValues) => {
+  const handleSubmit = async (data: Omit<Event, "id">) => {
     await createEvent(data);
     navigate("/");
   };

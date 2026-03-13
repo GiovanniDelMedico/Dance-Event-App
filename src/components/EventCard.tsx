@@ -1,6 +1,6 @@
 import type { Event } from "../types/Event";
 import { useNavigate } from "react-router-dom";
-import { deleteEvent } from "../api/events";
+
 
 interface EventCardProps {
   event: Event;
@@ -9,11 +9,6 @@ interface EventCardProps {
 
 export default function EventCard({ event, onDelete }: EventCardProps) {
   const navigate = useNavigate();
-
-  const handleDelete = async () => {
-    await deleteEvent(event.id);
-    onDelete?.(event.id); // notifica il parent
-  };
 
   return (
     <div className="border rounded-lg shadow-sm overflow-hidden bg-white">
@@ -45,14 +40,14 @@ export default function EventCard({ event, onDelete }: EventCardProps) {
         {/* Pulsanti */}
         <div className="flex gap-3 pt-3">
           <button
-            onClick={() => navigate(`/edit/${event.id}`)}
+            onClick={() => navigate(`/events/${event.id}/edit`)}
             className="px-3 py-1 bg-yellow-500 text-white rounded"
           >
             Modifica
           </button>
 
           <button
-            onClick={handleDelete}
+            onClick={()=>onDelete?.(event.id)}
             className="px-3 py-1 bg-red-600 text-white rounded"
           >
             Elimina
