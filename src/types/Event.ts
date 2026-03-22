@@ -6,4 +6,5 @@ export interface Event {
     category:string;
     description:string;
     image: string;
+    creatorId: number;
 }

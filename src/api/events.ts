@@ -2,34 +2,76 @@ import type { Event } from "../types/Event";
 
 const BASE_URL ="http://localhost:3000/events";
 
-export async function getEvents(): Promise<Event[]> {
-  const res = await fetch(BASE_URL);
+export async function getEvents(filters?: {
+  city?: string;
+  category?: string;
+  date?: string;
+}): Promise<Event[]> {
+  const params = new URLSearchParams();
+
+  if (filters?.city) params.append("city", filters.city);
+  if (filters?.category) params.append("category", filters.category);
+  if (filters?.date) params.append("date", filters.date);
+
+  const url = params.toString()
+    ? `${BASE_URL}?${params.toString()}`
+    : BASE_URL;
+
+  const res = await fetch(url);
   if (!res.ok) throw new Error("Errore nel recupero degli eventi");
   return res.json();
 }
 
+export async function getEventById(id: number): Promise<Event> {
+  const res = await fetch(`${BASE_URL}/${id}`);
+
+  if (!res.ok) {
+    throw new Error("Errore nel recupero dell'evento");
+  }
+
+  return res.json();
+}
+
+
 export async function createEvent(data: Omit<Event,"id">):Promise<Event>{
+  const token = localStorage.getItem("token");
   const res = await fetch(BASE_URL,{
     method:"POST",
-    headers:{"Content-Type":"application/json"},
-    body:JSON.stringify(data),
+    headers: {
+      "Content-Type": "application/json",
+      Authorization: `Bearer ${token}`,
+    } as Record<string, string>,   // <--- AGGIUNTO
+    body: JSON.stringify(data),
   });
   if(!res.ok) throw new Error ("Errore nella creazione dell'evento");
     return res.json();
 }
 
 export async function deleteEvent(id:number): Promise<void>{
-  const res = await fetch(`${BASE_URL}/${id}`,{
-    method:"DELETE",});
+  const token = localStorage.getItem("token");
+
+   const res = await fetch(`${BASE_URL}/${id}`, {
+    method: "DELETE",
+    headers: {
+      Authorization: `Bearer ${token}`,
+    } as Record<string, string>,
+  });
+
     if(!res.ok) throw new Error("Errore nella cancellazione dell'evento");
 }
 
 export async function updateEvent(id:number,data:Omit<Event, "id">): Promise<Event>{
+  const token = localStorage.getItem("token");
+
   const res = await fetch(`${BASE_URL}/${id}`,{
     method:"PUT",
-    headers: { "Content-Type": "application/json" },
+    headers:  {
+      "Content-Type": "application/json",
+      Authorization: `Bearer ${token}`,
+    } as Record<string, string>,
     body: JSON.stringify(data),
-  })
+  });
+  
   if(!res.ok) throw new Error("Errore nell'aggiornamento dell'evento");
   return res.json();
 }

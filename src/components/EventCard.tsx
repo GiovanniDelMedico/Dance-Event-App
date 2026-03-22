@@ -1,6 +1,6 @@
 import type { Event } from "../types/Event";
 import { useNavigate } from "react-router-dom";
-
+import EventActions from "./EventActions";
 
 interface EventCardProps {
   event: Event;
@@ -12,48 +12,44 @@ export default function EventCard({ event, onDelete }: EventCardProps) {
 
   return (
     <div className="border rounded-lg shadow-sm overflow-hidden bg-white">
-      {/* Immagine */}
-      <img
-        src={event.image}
-        alt={event.title}
-        className="w-full h-48 object-cover"
-      />
+      {/* Parte cliccabile */}
+      <div
+        onClick={() => navigate(`/events/${event.id}`)}
+        className="cursor-pointer hover:bg-gray-50"
+      >
+        {/* Immagine */}
+        <img
+          src={event.image}
+          alt={event.title}
+          className="w-full h-48 object-cover"
+        />
 
-      {/* Contenuto */}
-      <div className="p-4 space-y-2">
-        <h2 className="text-xl font-semibold">{event.title}</h2>
+        {/* Contenuto */}
+        <div className="p-4 space-y-2">
+          <h2 className="text-xl font-semibold">{event.title}</h2>
 
-        <p className="text-gray-600 text-sm">
-          {new Date(event.date).toLocaleDateString("it-IT")}
-        </p>
+          <p className="text-gray-600 text-sm">
+            {new Date(event.date).toLocaleDateString("it-IT")}
+          </p>
 
-        <p className="text-gray-700">
-          <span className="font-medium">Città:</span> {event.city}
-        </p>
+          <p className="text-gray-700">
+            <span className="font-medium">Città:</span> {event.city}
+          </p>
 
-        <p className="text-gray-700">
-          <span className="font-medium">Categoria:</span> {event.category}
-        </p>
+          <p className="text-gray-700">
+            <span className="font-medium">Categoria:</span> {event.category}
+          </p>
 
-        <p className="text-gray-800">{event.description}</p>
-
-        {/* Pulsanti */}
-        <div className="flex gap-3 pt-3">
-          <button
-            onClick={() => navigate(`/events/${event.id}/edit`)}
-            className="px-3 py-1 bg-yellow-500 text-white rounded"
-          >
-            Modifica
-          </button>
-
-          <button
-            onClick={()=>onDelete?.(event.id)}
-            className="px-3 py-1 bg-red-600 text-white rounded"
-          >
-            Elimina
-          </button>
+          <p className="text-gray-800">{event.description}</p>
         </div>
       </div>
+
+      <EventActions
+        onEdit={() => navigate(`/events/${event.id}/edit`)}
+        onDelete={() => onDelete?.(event.id)}
+        stopPropagation
+        creatorId={event.creatorId} 
+      />
     </div>
   );
 }

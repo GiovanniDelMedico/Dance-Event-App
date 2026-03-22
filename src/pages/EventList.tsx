@@ -1,44 +1,94 @@
 import { useEffect, useState } from "react";
-import { getEvents,deleteEvent } from "../api/events";
+import { getEvents, deleteEvent } from "../api/events";
 import type { Event } from "../types/Event";
 import { useNavigate } from "react-router-dom";
 import EventCard from "../components/EventCard";
-
+import EventFilters from "../components/EventFilters";
+import { useAuth } from "../context/AuthContext";
 
 export default function EventsList() {
   const navigate = useNavigate();
+
+
+  const { user, logout } = useAuth();
+
+  
   const [events, setEvents] = useState<Event[]>([]);
+  const [city, setCity] = useState("");
+  const [category, setCategory] = useState("");
+  const [date, setDate] = useState("");
 
   useEffect(() => {
-    getEvents().then(setEvents);
-  }, []);
+    getEvents({ city, category, date }).then(setEvents);
+  }, [city, category, date]);
 
-  const handleDeleteFromList = async (id:number)=>{
+  const handleDeleteFromList = async (id: number) => {
     await deleteEvent(id);
-    setEvents((prev)=>prev.filter((e)=>e.id !==id));
-  ;};
+    setEvents((prev) => prev.filter((e) => e.id !== id));
+  };
 
   return (
     <>
       <div className="max-w-xl mx-auto mt-10 p-4">
-        <div className="flex justify-end mb-4">
-          <button
-            onClick={() => navigate("/create")}
-            className="px-4 py-2 bg-blue-600 text-white rounded"
-          >
-            Crea nuovo evento
-          </button>
+        <div className="flex justify-between items-center mb-4">
+          {/* Se l'utente è loggato */}
+          {user ? (
+            <div className="flex items-center gap-4">
+              <span className="text-gray-700">Ciao, {user.name}</span>
+              <button
+                onClick={logout}
+                className="px-4 py-2 bg-red-600 text-white rounded"
+              >
+                Logout
+              </button>
+            </div>
+          ) : (
+            /* Se NON è loggato */
+            <button
+              onClick={() => navigate("/login")}
+              className="px-4 py-2 bg-blue-600 text-white rounded"
+            >
+              Login
+            </button>
+            
+          )}
+
+          {/* Pulsante crea evento (solo se loggato) */}
+          {user && (
+            <button
+              onClick={() => navigate("/create")}
+              className="px-4 py-2 bg-green-600 text-white rounded"
+            >
+              Crea nuovo evento
+            </button>
+          )}
         </div>
 
+        <div>
+          <EventFilters
+            city={city}
+            category={category}
+            date={date}
+            onCityChange={setCity}
+            onCategoryChange={setCategory}
+            onDateChange={setDate}
+          />
+        </div>
         <h1 className="text-3xl font-bold mb-6">Eventi in Programma</h1>
         <div className="space-y-6">
-          {events.map((event) => (
-            <EventCard 
-            key={event.id}
-            event = {event}
-            onDelete ={handleDeleteFromList}
-            />
-          ))}
+          {events.length === 0 ? (
+            <p className="text-red-500 text-center mt-10">
+              Nessun evento trovato con questi filtri.
+            </p>
+          ) : (
+            events.map((event) => (
+              <EventCard
+                key={event.id}
+                event={event}
+                onDelete={handleDeleteFromList}
+              />
+            ))
+          )}
         </div>
       </div>
     </>
