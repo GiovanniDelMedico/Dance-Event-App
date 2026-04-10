@@ -4,7 +4,7 @@ type Props = {
   onEdit: () => void;
   onDelete: () => void;
   stopPropagation?: boolean;
-  creatorId: number; // <--- AGGIUNTO: serve per capire se l'utente è il creatore
+  creatorId: number;
 };
 
 export default function EventActions({
@@ -15,16 +15,16 @@ export default function EventActions({
 }: Props) {
   const { user } = useAuth();
 
-  // L’utente può modificare/eliminare solo se è il creatore
-  const isOwner = user && user.id === creatorId;
+  const isCreator = user && user.id === creatorId;
+  const isAdmin = user && user.role === "admin";
+  const canManage = isCreator || isAdmin;
 
-  if (!isOwner) {
-    return null; // <--- Nessun pulsante se non autorizzato
+  if (!canManage) {
+    return null;
   }
 
   const handleClick =
-    (callback: () => void) =>
-    (e: React.MouseEvent<HTMLButtonElement>) => {
+    (callback: () => void) => (e: React.MouseEvent<HTMLButtonElement>) => {
       if (stopPropagation) e.stopPropagation();
       callback();
     };
@@ -39,8 +39,13 @@ export default function EventActions({
       </button>
 
       <button
-        onClick={handleClick(onDelete)}
-        className="px-3 py-1 bg-red-600 text-white rounded"
+        onClick={(e) => {
+          e.stopPropagation();
+          if (confirm("Sei sicuro di voler eliminare questo evento?")) {
+            onDelete?.();
+          }
+        }}
+        className="px-3 py-1 bg-red-600 text-white rounded hover:bg-red-700"
       >
         Elimina
       </button>

@@ -19,7 +19,7 @@ export function authMiddleware(req: AuthRequest, res: Response, next: NextFuncti
   const token = authHeader.split(" ")[1];
 
   try {
-    const decoded = jwt.verify(token, "SUPER_SECRET_KEY") as {
+    const decoded = jwt.verify(token, process.env.JWT_SECRET!) as {
       id: number;
       email: string;
       role: string;
@@ -31,5 +31,3 @@ export function authMiddleware(req: AuthRequest, res: Response, next: NextFuncti
     return res.status(401).json({ error: "Token non valido" });
   }
 }
-
-

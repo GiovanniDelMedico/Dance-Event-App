@@ -15,32 +15,35 @@ model User {
   role         String   @default("user")
   createdAt    DateTime @default(now())
 
-  events       Event[]
+  events        Event[]
+  registrations EventRegistration[]
 }
 
 model Event {
   id          Int      @id @default(autoincrement())
+  eventTypes   String[]
   title       String
   description String
   date        DateTime
+  region      String
   city        String
   category    String
   image       String?
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
 
-  creatorId   Int
-  creator     User     @relation(fields: [creatorId], references: [id])
+  creatorId     Int
+  creator       User                @relation(fields: [creatorId], references: [id])
+  registrations EventRegistration[]
 }
 
 model EventRegistration {
   id        Int      @id @default(autoincrement())
-  user      User     @relation(fields: [userId], references: [id])
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
   userId    Int
-  event     Event    @relation(fields: [eventId], references: [id])
+  event     Event    @relation(fields: [eventId], references: [id], onDelete:Cascade)
   eventId   Int
   createdAt DateTime @default(now())
 
-  @@unique([userId, eventId]) 
+  @@unique([userId, eventId])
 }
-

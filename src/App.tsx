@@ -5,16 +5,18 @@ import EventEdit from "./pages/EventEdit";
 import EventDetail from "./pages/EventDetail";
 import Login from "./pages/Login";
 import Register from "./pages/Register";
+import { Toaster } from "react-hot-toast";
 
 function App() {
   return (
     <BrowserRouter>
-   
+      {/* Toaster globale */}
+      <Toaster position="top-right" />
+
       <Routes>
-       
         <Route path="/" element={<EventsList />} />
         <Route path="/login" element={<Login />} />
-        <Route path="/create"  element={<EventCreate/>}/>
+        <Route path="/create" element={<EventCreate />} />
         <Route path="/events/:id" element={<EventDetail />} />
         <Route path="/events/:id/edit" element={<EventEdit />} />
         <Route path="/register" element={<Register />} />
@@ -22,4 +24,5 @@ function App() {
     </BrowserRouter>
   );
 }
+
 export default App;

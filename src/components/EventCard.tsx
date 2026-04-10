@@ -4,7 +4,7 @@ import EventActions from "./EventActions";
 
 interface EventCardProps {
   event: Event;
-  onDelete?: (id: number) => void; // permette a EventList di aggiornare la UI
+  onDelete?: (id: number) => void;
 }
 
 export default function EventCard({ event, onDelete }: EventCardProps) {
@@ -18,18 +18,35 @@ export default function EventCard({ event, onDelete }: EventCardProps) {
         className="cursor-pointer hover:bg-gray-50"
       >
         {/* Immagine */}
-        <img
-          src={event.image}
-          alt={event.title}
-          className="w-full h-48 object-cover"
-        />
+        {event.image ? (
+          <img
+            src={event.image}
+            alt={event.title}
+            className="w-full h-48 object-cover"
+          />
+        ) : (
+          <div className="w-full h-48 bg-gray-200 flex items-center justify-center text-gray-500">
+            Nessuna immagine
+          </div>
+        )}
 
         {/* Contenuto */}
         <div className="p-4 space-y-2">
           <h2 className="text-xl font-semibold">{event.title}</h2>
 
+          {/* 🆕 TIPLOGIE EVENTO */}
+          {event.eventTypes && event.eventTypes.length > 0 && (
+            <p className="text-sm text-blue-700 font-medium">
+              {event.eventTypes.join(" • ")}
+            </p>
+          )}
+
           <p className="text-gray-600 text-sm">
             {new Date(event.date).toLocaleDateString("it-IT")}
+          </p>
+
+          <p className="text-gray-700">
+            <span className="font-medium">Regione:</span> {event.region}
           </p>
 
           <p className="text-gray-700">
@@ -48,7 +65,7 @@ export default function EventCard({ event, onDelete }: EventCardProps) {
         onEdit={() => navigate(`/events/${event.id}/edit`)}
         onDelete={() => onDelete?.(event.id)}
         stopPropagation
-        creatorId={event.creatorId} 
+        creatorId={event.creatorId}
       />
     </div>
   );

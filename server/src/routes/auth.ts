@@ -4,6 +4,7 @@ import { prisma } from "../lib/prisma";
 import type { RegisterBody } from "../types/api";
 import type { LoginBody } from "../types/api";
 import jwt from "jsonwebtoken";
+import { authMiddleware, AuthRequest } from "../middleware/auth";
 
 
 const router = Router();
@@ -29,20 +30,22 @@ router.post(
           role: "user",
         },
       });
-      
+
       //TOKEN
       const token = jwt.sign(
         { id: user.id, email: user.email },
         process.env.JWT_SECRET!,
-        { expiresIn: "7d" }
+        { expiresIn: "7d" },
       );
 
-      res.status(201).json({ message: "Registrazione completata", user, token });
+      res
+        .status(201)
+        .json({ message: "Registrazione completata", user, token });
     } catch (error) {
-      console.error(error);
+      console.error("ERRORE REGISTRAZIONE:", error);
       res.status(500).json({ error: "Errore nella registrazione" });
     }
-  }
+  },
 );
 
 router.post(
@@ -70,8 +73,8 @@ router.post(
           email: user.email,
           role: user.role,
         },
-        "SUPER_SECRET_KEY",
-        { expiresIn: "7d" }
+        process.env.JWT_SECRET!,
+        { expiresIn: "7d" },
       );
 
       // 4. Rispondo con token + dati utente
@@ -80,8 +83,10 @@ router.post(
       console.error(error);
       res.status(500).json({ error: "Errore nel login" });
     }
-  }
+  },
 );
+
+
 
 
 export default router;

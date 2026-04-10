@@ -8,19 +8,21 @@ import { useAuth } from "../context/AuthContext";
 
 export default function EventsList() {
   const navigate = useNavigate();
-
-
   const { user, logout } = useAuth();
 
-  
   const [events, setEvents] = useState<Event[]>([]);
+
+  // 🆕 aggiungiamo lo stato per la tipologia
+  const [eventType, setEventType] = useState("");
+
   const [city, setCity] = useState("");
   const [category, setCategory] = useState("");
   const [date, setDate] = useState("");
+  const [region, setRegion] = useState("");
 
   useEffect(() => {
-    getEvents({ city, category, date }).then(setEvents);
-  }, [city, category, date]);
+    getEvents({ region, city, category, date, eventType }).then(setEvents);
+  }, [region, city, category, date, eventType]); // 🆕 aggiunto eventType
 
   const handleDeleteFromList = async (id: number) => {
     await deleteEvent(id);
@@ -31,7 +33,6 @@ export default function EventsList() {
     <>
       <div className="max-w-xl mx-auto mt-10 p-4">
         <div className="flex justify-between items-center mb-4">
-          {/* Se l'utente è loggato */}
           {user ? (
             <div className="flex items-center gap-4">
               <span className="text-gray-700">Ciao, {user.name}</span>
@@ -43,17 +44,24 @@ export default function EventsList() {
               </button>
             </div>
           ) : (
-            /* Se NON è loggato */
-            <button
-              onClick={() => navigate("/login")}
-              className="px-4 py-2 bg-blue-600 text-white rounded"
-            >
-              Login
-            </button>
-            
+            <div className="flex items-center gap-4">
+              <button
+                onClick={() => navigate("/login")}
+                className="px-4 py-2 bg-blue-600 text-white rounded"
+              >
+                Login
+              </button>
+
+              {/* 🆕 Pulsante Iscriviti */}
+              <button
+                onClick={() => navigate("/register")}
+                className="px-4 py-2 bg-green-600 text-white rounded"
+              >
+                Iscriviti
+              </button>
+            </div>
           )}
 
-          {/* Pulsante crea evento (solo se loggato) */}
           {user && (
             <button
               onClick={() => navigate("/create")}
@@ -66,15 +74,21 @@ export default function EventsList() {
 
         <div>
           <EventFilters
+            eventType={eventType} // 🆕 aggiunto
+            region={region}
             city={city}
             category={category}
             date={date}
+            onEventTypeChange={setEventType} // 🆕 aggiunto
+            onRegionChange={setRegion}
             onCityChange={setCity}
             onCategoryChange={setCategory}
             onDateChange={setDate}
           />
         </div>
+
         <h1 className="text-3xl font-bold mb-6">Eventi in Programma</h1>
+
         <div className="space-y-6">
           {events.length === 0 ? (
             <p className="text-red-500 text-center mt-10">

@@ -1,21 +1,23 @@
 import { useNavigate } from "react-router-dom";
 import { createEvent } from "../api/events";
 import EventForm from "../components/EventForm";
-import type { Event } from "../types/Event";
+import type { EventFormData } from "../types/Event";
 
 export default function EventCreate() {
   const navigate = useNavigate();
 
-  const initialValues = {
+  const initialValues: EventFormData = {
     title: "",
     date: "",
+    region: "",
     city: "",
     category: "",
     description: "",
-    image: ""
+    image: "",
+    eventTypes: [], // 🆕 AGGIUNTO
   };
 
-  const handleSubmit = async (data: Omit<Event, "id">) => {
+  const handleSubmit = async (data: EventFormData) => {
     await createEvent(data);
     navigate("/");
   };

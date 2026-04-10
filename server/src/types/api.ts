@@ -1,7 +1,9 @@
 export interface CreateEventBody {
   title: string;
+  eventTypes: string[];
   description: string;
   date: string;
+  region: string;
   city: string;
   category: string;
   image: string;
@@ -10,8 +12,10 @@ export interface CreateEventBody {
 
 export interface UpdateEventBody {
   title?: string;
+  eventTypes?: string[];
   description?: string;
   date?: string;
+  region?: string;
   city?: string;
   category?: string;
   image?: string;
