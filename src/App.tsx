@@ -1,28 +1,19 @@
-import { BrowserRouter, Routes, Route } from "react-router-dom";
-import EventsList from "./pages/EventList";
-import EventCreate from "./pages/EventCreate";
-import EventEdit from "./pages/EventEdit";
-import EventDetail from "./pages/EventDetail";
-import Login from "./pages/Login";
-import Register from "./pages/Register";
+import { BrowserRouter } from "react-router-dom";
+import Navbar from "./layout/Navbar";
+import AppRoutes from "./routes/AppRoutes";
 import { Toaster } from "react-hot-toast";
 
-function App() {
+export default function App() {
   return (
     <BrowserRouter>
       {/* Toaster globale */}
       <Toaster position="top-right" />
 
-      <Routes>
-        <Route path="/" element={<EventsList />} />
-        <Route path="/login" element={<Login />} />
-        <Route path="/create" element={<EventCreate />} />
-        <Route path="/events/:id" element={<EventDetail />} />
-        <Route path="/events/:id/edit" element={<EventEdit />} />
-        <Route path="/register" element={<Register />} />
-      </Routes>
+      {/* Layout principale */}
+      <div className="min-h-screen bg-gray-100">
+        <Navbar />
+        <AppRoutes />
+      </div>
     </BrowserRouter>
   );
 }
-
-export default App;

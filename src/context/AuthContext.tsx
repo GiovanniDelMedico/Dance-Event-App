@@ -1,74 +1,62 @@
-import { createContext, useContext, useState } from "react";
-
-interface User {
-  id: number;
-  email: string;
-  name: string;
-  role: string;
-}
+import { createContext, useContext, useEffect, useState } from "react";
+import { loginUser, registerUser } from "../api/users.api";
+import type { User,LoginBody,RegisterBody,AuthResponse } from "../modules/users/types";
+import { saveAuth, getToken, getUser, clearAuth } from "../utils/storage";
 
 interface AuthContextType {
   user: User | null;
   token: string | null;
-  login: (email: string, password: string) => Promise<void>;
+  login: (body: LoginBody) => Promise<void>;
+  register: (body: RegisterBody) => Promise<void>;
   logout: () => void;
-  register: (name: string, email: string, password: string) => Promise<void>;
 }
 
 const AuthContext = createContext<AuthContextType | null>(null);
 
 export function AuthProvider({ children }: { children: React.ReactNode }) {
   const [user, setUser] = useState<User | null>(null);
-  const [token, setToken] = useState<string | null>(
-    localStorage.getItem("token")
-  );
+  const [token, setToken] = useState<string | null>(null);
 
-  async function login(email: string, password: string) {
-    const res = await fetch("http://localhost:3000/auth/login", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ email, password }),
-    });
+  // 🔥 Ripristina sessione da localStorage
+  useEffect(() => {
+    const storedToken = getToken();
+    const storedUser = getUser();
 
-    if (!res.ok) throw new Error("Credenziali non valide");
+    if (storedToken && storedUser) {
+      setToken(storedToken);
+      setUser(storedUser);
+    }
+  }, []);
 
-    const data = await res.json();
+  // 🔥 LOGIN
+  async function login(body: LoginBody) {
+    const res: AuthResponse = await loginUser(body);
 
-    setUser(data.user);
-    setToken(data.token);
+    setUser(res.user);
+    setToken(res.token);
 
-    localStorage.setItem("token", data.token);
-    localStorage.setItem("user", JSON.stringify(data.user));
+    saveAuth(res.token, res.user);
   }
 
+  // 🔥 REGISTER
+  async function register(body: RegisterBody) {
+    const res: AuthResponse = await registerUser(body);
+
+    setUser(res.user);
+    setToken(res.token);
+
+    saveAuth(res.token, res.user);
+  }
+
+  // 🔥 LOGOUT
   function logout() {
     setUser(null);
     setToken(null);
-    localStorage.removeItem("token");
-    localStorage.removeItem("user");
+    clearAuth();
   }
 
-  async function register(name: string, email: string, password: string) {
-  const res = await fetch("http://localhost:3000/auth/register", {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({ name, email, password }),
-  });
-
-  if (!res.ok) throw new Error("Registrazione non valida");
-
-  const data = await res.json();
-
-  setUser(data.user);
-  setToken(data.token);
-
-  localStorage.setItem("token", data.token);
-  localStorage.setItem("user", JSON.stringify(data.user));
-}
-
-
   return (
-    <AuthContext.Provider value={{ user, token, login, logout,register }}>
+    <AuthContext.Provider value={{ user, token, login, register, logout }}>
       {children}
     </AuthContext.Provider>
   );

@@ -1,33 +1,31 @@
 import { Request, Response, NextFunction } from "express";
 import jwt from "jsonwebtoken";
+import { env } from "../config/env";
 
-export interface AuthRequest extends Request {
-  user?: {
-    id: number;
-    email: string;
-    role: string;
-  };
+export interface AuthUser {
+  id: number;
+  email: string;
+  role: string;
 }
 
-export function authMiddleware(req: AuthRequest, res: Response, next: NextFunction) {
-  const authHeader = req.headers.authorization;
+export interface AuthRequest extends Request {
+  user?: AuthUser;
+}
 
-  if (!authHeader) {
-    return res.status(401).json({ error: "Token mancante" });
+export function auth(req: AuthRequest, res: Response, next: NextFunction) {
+  const header = req.headers.authorization;
+
+  if (!header) {
+    return res.status(401).json({ message: "Token mancante" });
   }
 
-  const token = authHeader.split(" ")[1];
+  const token = header.split(" ")[1];
 
   try {
-    const decoded = jwt.verify(token, process.env.JWT_SECRET!) as {
-      id: number;
-      email: string;
-      role: string;
-    };
-
+    const decoded = jwt.verify(token, env.JWT_SECRET) as AuthUser;
     req.user = decoded;
     next();
   } catch (error) {
-    return res.status(401).json({ error: "Token non valido" });
+    return res.status(401).json({ message: "Token non valido" });
   }
 }
