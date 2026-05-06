@@ -36,32 +36,48 @@ export default function EventsHome() {
 
   if (loading) {
     return (
-      <div className="py-10">
+      <div className="flex items-center justify-center py-20">
         <Spinner />
       </div>
     );
   }
 
   return (
-    <div className="max-w-6xl mx-auto py-10 px-4">
+    <div className="max-w-6xl mx-auto px-4 py-6">
 
-      {/* Titolo */}
-      <Card className="mb-6">
-        <h1 className="text-3xl font-bold mb-2">Eventi</h1>
-        <p className="text-gray-600">
-          Esplora gli eventi disponibili o filtra per trovare ciò che ti interessa.
+      {/* HEADER */}
+      <div className="mb-6">
+        <h1 className="text-2xl font-semibold text-zinc-900 tracking-tight">
+          Eventi
+        </h1>
+
+        <p className="text-sm text-zinc-600 mt-1">
+          Scopri battle, jam e sessioni nella tua zona
         </p>
-      </Card>
+      </div>
 
-      {/* Filtri */}
-      <EventFilters filters={filters} setFilters={setFilters} />
+      {/* FILTRI */}
+      <div className="mb-6">
+        <Card className="p-4">
+          <EventFilters filters={filters} setFilters={setFilters} />
+        </Card>
+      </div>
 
-      {/* Lista eventi */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 mt-6">
+      {/* GRID */}
+      <div
+        className="
+          grid gap-5
+          grid-cols-1
+          sm:grid-cols-2
+          lg:grid-cols-3
+        "
+      >
         {events.length === 0 && (
-          <p className="text-gray-600 col-span-full text-center">
-            Nessun evento trovato.
-          </p>
+          <div className="col-span-full text-center py-10">
+            <p className="text-zinc-600">
+              Nessun evento trovato
+            </p>
+          </div>
         )}
 
         {events.map((ev) => (

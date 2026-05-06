@@ -1,5 +1,5 @@
-const TOKEN_KEY = "auth_token";
-const USER_KEY = "auth_user";
+const TOKEN_KEY = "token";      // 👈 chiave unica e coerente
+const USER_KEY = "user";        // 👈 chiave unica e coerente
 
 export function saveAuth(token: string, user: any) {
   localStorage.setItem(TOKEN_KEY, token);

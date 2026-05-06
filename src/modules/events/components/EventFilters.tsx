@@ -15,16 +15,28 @@ interface Props {
 }
 
 export default function EventFilters({ filters, setFilters }: Props) {
-  function handleChange(e: ChangeEvent<HTMLSelectElement | HTMLInputElement>) {
+  function handleChange(
+    e: ChangeEvent<HTMLSelectElement | HTMLInputElement>
+  ) {
     const { name, value } = e.target;
     setFilters({ ...filters, [name]: value });
   }
 
+  const base =
+    "w-full px-3 py-2 text-sm rounded-lg outline-none transition " +
+    "bg-zinc-100 text-zinc-900 border border-zinc-300 " +
+    "focus:border-purple-500 focus:ring-2 focus:ring-purple-300";
+
   return (
-    <div className="event-filters">
+    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-3">
 
       {/* REGIONE */}
-      <select name="region" value={filters.region} onChange={handleChange}>
+      <select
+        name="region"
+        value={filters.region}
+        onChange={handleChange}
+        className={base}
+      >
         <option value="">Tutte le regioni</option>
         {REGIONS.map((reg) => (
           <option key={reg} value={reg}>
@@ -40,10 +52,16 @@ export default function EventFilters({ filters, setFilters }: Props) {
         placeholder="Città"
         value={filters.city}
         onChange={handleChange}
+        className={base}
       />
 
       {/* CATEGORIA */}
-      <select name="category" value={filters.category} onChange={handleChange}>
+      <select
+        name="category"
+        value={filters.category}
+        onChange={handleChange}
+        className={base}
+      >
         <option value="">Tutte le categorie</option>
         <option value="Danza">Danza</option>
         <option value="Hip Hop">Hip Hop</option>
@@ -59,6 +77,7 @@ export default function EventFilters({ filters, setFilters }: Props) {
         name="date"
         value={filters.date}
         onChange={handleChange}
+        className={base}
       />
 
       {/* TIPO EVENTO */}
@@ -66,6 +85,7 @@ export default function EventFilters({ filters, setFilters }: Props) {
         name="eventType"
         value={filters.eventType}
         onChange={handleChange}
+        className={base}
       >
         <option value="">Tutti i tipi</option>
         <option value="Battle">Battle</option>

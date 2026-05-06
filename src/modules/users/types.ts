@@ -5,6 +5,7 @@ export interface LoginBody {
 
 export interface RegisterBody {
   name: string;
+  nickname: string;
   email: string;
   password: string;
 }
@@ -14,6 +15,8 @@ export interface User {
   name: string;
   email: string;
   role: "user" | "admin";
+  nickname: string;
+  avatarUrl?: string | null;
 }
 
 export interface AuthResponse {

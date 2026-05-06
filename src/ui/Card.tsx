@@ -10,7 +10,15 @@ export default function Card({ children, className }: CardProps) {
   return (
     <div
       className={clsx(
-        "bg-white rounded-lg shadow p-4 border border-gray-200",
+        // Base shape
+        "rounded-xl border transition-all duration-200",
+
+        // Light mode (coerente con tutto il sito)
+       "bg-[#EDEDF0] border-zinc-300 shadow-sm hover:shadow-md",
+
+        // Dark mode (disattivata per ora)
+        "dark:bg-zinc-900 dark:border-zinc-800 dark:hover:shadow-purple-900/10",
+
         className
       )}
     >

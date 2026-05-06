@@ -2,6 +2,7 @@ import { useNavigate } from "react-router-dom";
 import { deleteEvent } from "../../../api/events.api";
 import type { Event } from "../types";
 import { useAuth } from "../../../context/AuthContext";
+import Button from "../../../ui/Button";
 
 interface Props {
   event: Event;
@@ -28,7 +29,7 @@ export default function EventActions({ event }: Props) {
     try {
       await deleteEvent(event.id, token);
       navigate("/events");
-    } catch (err) {
+    } catch {
       alert("Errore nella cancellazione dell'evento");
     }
   }
@@ -36,17 +37,24 @@ export default function EventActions({ event }: Props) {
   if (!isCreator) return null;
 
   return (
-    <div className="event-actions-admin">
-      <button
-        className="btn-secondary"
+    <div className="flex gap-3 mt-4">
+
+      {/* EDIT */}
+      <Button
+        variant="secondary"
         onClick={() => navigate(`/events/${event.id}/edit`)}
       >
         Modifica
-      </button>
+      </Button>
 
-      <button className="btn-danger" onClick={handleDelete}>
+      {/* DELETE */}
+      <Button
+        variant="danger"
+        onClick={handleDelete}
+      >
         Elimina
-      </button>
+      </Button>
+
     </div>
   );
 }

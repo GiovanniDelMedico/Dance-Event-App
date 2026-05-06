@@ -19,12 +19,21 @@ export default function Button({
   disabled,
 }: ButtonProps) {
   const base =
-    "px-4 py-2 rounded-md font-medium transition-colors disabled:opacity-50 disabled:cursor-not-allowed";
+    "px-4 py-2 rounded-lg font-medium text-sm transition-all duration-200 " +
+    "disabled:opacity-50 disabled:cursor-not-allowed " +
+    "focus:outline-none focus:ring-2 focus:ring-purple-500/40";
 
   const variants = {
-    primary: "bg-blue-600 text-white hover:bg-blue-700",
-    secondary: "bg-gray-700 text-white hover:bg-gray-800",
-    danger: "bg-red-600 text-white hover:bg-red-700",
+    primary:
+      "bg-purple-600 text-white hover:bg-purple-500 " +
+      "shadow-sm shadow-purple-500/20",
+
+    secondary:
+      "bg-zinc-300 text-zinc-800 hover:bg-zinc-400 " +
+      "border border-zinc-400",
+
+    danger:
+      "bg-red-600 text-white hover:bg-red-500",
   };
 
   return (

@@ -1,12 +1,24 @@
 import { Router } from "express";
 import * as usersController from "./users.controller";
+import { auth } from "../../middleware/auth";
+import { upload } from "../../middleware/upload";
 
 const router = Router();
 
-// POST /users/register
+// REGISTER
 router.post("/register", usersController.register);
 
-// POST /users/login
+// LOGIN
 router.post("/login", usersController.login);
+
+// UPLOAD AVATAR (nuovo)
+router.post(
+  "/avatar",
+  auth,
+  upload.single("avatar"),
+  usersController.uploadAvatar
+);
+
+router.get("/me/registered-events", auth, usersController.getRegisteredEvents);
 
 export default router;

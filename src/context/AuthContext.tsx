@@ -1,6 +1,6 @@
 import { createContext, useContext, useEffect, useState } from "react";
 import { loginUser, registerUser } from "../api/users.api";
-import type { User,LoginBody,RegisterBody,AuthResponse } from "../modules/users/types";
+import type { User, LoginBody, RegisterBody, AuthResponse } from "../modules/users/types";
 import { saveAuth, getToken, getUser, clearAuth } from "../utils/storage";
 
 interface AuthContextType {
@@ -9,6 +9,8 @@ interface AuthContextType {
   login: (body: LoginBody) => Promise<void>;
   register: (body: RegisterBody) => Promise<void>;
   logout: () => void;
+  setUser: React.Dispatch<React.SetStateAction<User | null>>;
+  setToken: React.Dispatch<React.SetStateAction<string | null>>;
 }
 
 const AuthContext = createContext<AuthContextType | null>(null);
@@ -35,7 +37,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     setUser(res.user);
     setToken(res.token);
 
-    saveAuth(res.token, res.user);
+    saveAuth(res.token, res.user); // salva avatarUrl
   }
 
   // 🔥 REGISTER
@@ -45,7 +47,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     setUser(res.user);
     setToken(res.token);
 
-    saveAuth(res.token, res.user);
+    saveAuth(res.token, res.user); // salva avatarUrl
   }
 
   // 🔥 LOGOUT
@@ -56,7 +58,17 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   }
 
   return (
-    <AuthContext.Provider value={{ user, token, login, register, logout }}>
+    <AuthContext.Provider
+      value={{
+        user,
+        token,
+        login,
+        register,
+        logout,
+        setUser,   // 👈 necessario per aggiornare avatar
+        setToken,  // 👈 utile per refresh token futuri
+      }}
+    >
       {children}
     </AuthContext.Provider>
   );

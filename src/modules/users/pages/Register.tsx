@@ -2,7 +2,6 @@ import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "../../../context/AuthContext";
 
-// UI components
 import Card from "../../../ui/Card";
 import Input from "../../../ui/Input";
 import Button from "../../../ui/Button";
@@ -13,6 +12,7 @@ export default function Register() {
   const navigate = useNavigate();
 
   const [name, setName] = useState("");
+  const [nickname, setNickname] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
@@ -22,67 +22,117 @@ export default function Register() {
     setError("");
 
     try {
-      await register({ name, email, password });
+      await register({ name, nickname, email, password });
 
       toast.success("Registrazione completata");
 
-      // redirect professionale
       navigate("/");
-    } catch (err: any) {
+    } catch {
       setError("Registrazione non valida");
       toast.error("Registrazione non valida");
     }
   }
 
   return (
-    <div className="max-w-md mx-auto py-10 px-4">
-      <Card>
-        <h2 className="text-2xl font-bold mb-4">Registrati</h2>
+    <div className="min-h-screen flex items-center justify-center bg-white px-4">
 
-        <form onSubmit={handleSubmit} className="space-y-4">
+      <div className="w-full max-w-md">
 
-          <div>
-            <label className="block mb-1 font-medium">Nome</label>
-            <Input
-              type="text"
-              placeholder="Mario Rossi"
-              value={name}
-              onChange={(e) => setName(e.target.value)}
-              required
-            />
-          </div>
+        {/* HEADER BRAND */}
+        <div className="text-center mb-6">
+          <h1 className="text-2xl font-bold text-zinc-900">
+            Dance Events
+          </h1>
+          <p className="text-sm text-zinc-600">
+            Crea un account per partecipare alle battle
+          </p>
+        </div>
 
-          <div>
-            <label className="block mb-1 font-medium">Email</label>
-            <Input
-              type="email"
-              placeholder="email@example.com"
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
-              required
-            />
-          </div>
+        {/* CARD */}
+        <Card className="p-6">
 
-          <div>
-            <label className="block mb-1 font-medium">Password</label>
-            <Input
-              type="password"
-              placeholder="•••••••••"
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
-              required
-            />
-          </div>
-
-          {error && (
-            <p className="text-red-600 text-sm font-medium">{error}</p>
-          )}
-
-          <Button type="submit" variant="primary" className="w-full">
+          <h2 className="text-xl font-semibold mb-4 text-zinc-900">
             Registrati
-          </Button>
-        </form>
-      </Card>
+          </h2>
+
+          <form onSubmit={handleSubmit} className="space-y-4">
+
+            {/* NAME */}
+            <div>
+              <label className="block mb-1 text-sm font-medium text-zinc-700">
+                Nome
+              </label>
+              <Input
+                type="text"
+                placeholder="Mario Rossi"
+                value={name}
+                onChange={(e) => setName(e.target.value)}
+                required
+              />
+            </div>
+
+            {/* NICKNAME */}
+            <div>
+              <label className="block mb-1 text-sm font-medium text-zinc-700">
+                Nickname
+              </label>
+              <Input
+                type="text"
+                placeholder="mariorossi"
+                value={nickname}
+                onChange={(e) => setNickname(e.target.value)}
+                required
+              />
+            </div>
+
+            {/* EMAIL */}
+            <div>
+              <label className="block mb-1 text-sm font-medium text-zinc-700">
+                Email
+              </label>
+              <Input
+                type="email"
+                placeholder="email@example.com"
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+                required
+              />
+            </div>
+
+            {/* PASSWORD */}
+            <div>
+              <label className="block mb-1 text-sm font-medium text-zinc-700">
+                Password
+              </label>
+              <Input
+                type="password"
+                placeholder="•••••••••"
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
+                required
+              />
+            </div>
+
+            {/* ERROR */}
+            {error && (
+              <p className="text-red-600 text-sm font-medium bg-red-100 p-2 rounded-md">
+                {error}
+              </p>
+            )}
+
+            {/* BUTTON */}
+            <Button type="submit" variant="primary" className="w-full">
+              Registrati
+            </Button>
+          </form>
+        </Card>
+
+        {/* FOOTER */}
+        <p className="text-center text-xs text-zinc-600 mt-4">
+          Hai già un account? Accedi per partecipare alle battle
+        </p>
+
+      </div>
     </div>
   );
 }

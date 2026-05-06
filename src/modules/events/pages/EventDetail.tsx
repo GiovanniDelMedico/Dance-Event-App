@@ -11,14 +11,16 @@ import {
 } from "../../../api/events.api";
 
 import type { Event } from "../types";
+import type { ConversationCreated } from "../../messages/types";
 import { useAuth } from "../../../context/AuthContext";
 
-// UI components
 import Button from "../../../ui/Button";
 import Badge from "../../../ui/Badge";
 import Card from "../../../ui/Card";
 import Spinner from "../../../ui/Spinner";
 import toast from "react-hot-toast";
+import { http } from "../../../api/http";
+import { Send } from "lucide-react";
 
 export default function EventDetail() {
   const { id } = useParams();
@@ -45,7 +47,6 @@ export default function EventDetail() {
             setIsRegistered(reg.isRegistered);
           }
 
-          // Lista iscritti → solo creator o admin
           if (user && (user.id === data.creatorId || user.role === "admin")) {
             const result = await getRegistrations(eventId, token);
             setRegistrations(result.registrations);
@@ -62,13 +63,13 @@ export default function EventDetail() {
   }, [eventId, token, user]);
 
   async function handleRegister() {
-    if (!token) return alert("Devi essere loggato per iscriverti");
+    if (!token) return;
 
     try {
       await registerToEvent(eventId, token);
       setIsRegistered(true);
     } catch {
-      alert("Errore nell'iscrizione");
+      toast.error("Errore nell'iscrizione");
     }
   }
 
@@ -79,11 +80,46 @@ export default function EventDetail() {
       await unregisterFromEvent(eventId, token);
       setIsRegistered(false);
     } catch {
-      alert("Errore nella disiscrizione");
+      toast.error("Errore nella disiscrizione");
     }
   }
 
-  // 🔥 ELIMINA EVENTO (creator o admin)
+  async function handleStartConversationWithCreator() {
+    if (!event || !user) return;
+
+    try {
+      const conversation = await http<ConversationCreated>(`/messages`, {
+        method: "POST",
+        body: {
+          participantId: event.creatorId,
+          eventId: event.id,
+        },
+      });
+
+      navigate(`/messages/${conversation.id}`);
+    } catch {
+      toast.error("Errore nell'apertura della chat");
+    }
+  }
+
+  async function handleMessageUser(participantId: number) {
+    if (!event) return;
+
+    try {
+      const conversation = await http<ConversationCreated>(`/messages`, {
+        method: "POST",
+        body: {
+          participantId,
+          eventId: event.id,
+        },
+      });
+
+      navigate(`/messages/${conversation.id}`);
+    } catch {
+      toast.error("Errore nell'apertura della chat");
+    }
+  }
+
   async function handleDelete() {
     if (!token) return;
 
@@ -100,101 +136,132 @@ export default function EventDetail() {
   }
 
   if (loading) return <Spinner />;
+
   if (error || !event)
-    return <p className="text-center py-10">{error || "Evento non trovato"}</p>;
+    return (
+      <p className="text-center py-10 text-zinc-500">
+        {error || "Evento non trovato"}
+      </p>
+    );
 
   const canManage =
     user && (user.id === event.creatorId || user.role === "admin");
 
-  return (
-    <div className="max-w-3xl mx-auto py-10 px-4">
-      <Card className="mb-6">
-        <h1 className="text-3xl font-bold mb-4">{event.title}</h1>
+  const isCreator = user && user.id === event.creatorId;
 
+  return (
+    <div className="max-w-2xl mx-auto px-4 py-6">
+      {/* HERO IMAGE */}
+      <div className="relative rounded-xl overflow-hidden mb-5">
         {event.image ? (
-          <img
-            src={event.image}
-            alt={event.title}
-            className="w-full rounded-lg shadow mb-6"
-          />
+          <img src={event.image} className="w-full h-64 object-cover" />
         ) : (
-          <div className="w-full h-64 bg-gray-200 rounded-lg flex items-center justify-center mb-6">
+          <div className="w-full h-64 bg-zinc-200 flex items-center justify-center text-zinc-500">
             Nessuna immagine
           </div>
         )}
 
-        <p className="text-gray-700 mb-4">{event.description}</p>
+        <div className="absolute inset-0 bg-gradient-to-t from-black/70 to-transparent" />
 
-        <p className="mb-2">
-          <strong>Data:</strong>{" "}
+        <div className="absolute bottom-4 left-4 right-4">
+          <h1 className="text-xl font-semibold text-white drop-shadow">
+            {event.title}
+          </h1>
+        </div>
+      </div>
+
+      {/* INFO */}
+      <Card className="p-4 flex flex-col gap-3">
+        <p className="text-md text-black">
+          {event.city}, {event.region}
+        </p>
+
+        <p className="text-md text-black">
           {new Date(event.date).toLocaleDateString("it-IT")}
         </p>
 
-        <p className="mb-2">
-          <strong>Luogo:</strong> {event.city}, {event.region}
+        <p className="text-md text-black leading-relaxed">
+          {event.description}
         </p>
 
-        <p className="mb-4">
-          <strong>Categoria:</strong> {event.category}
-        </p>
-
-        <div className="mb-6">
-          <strong>Tipi evento:</strong>
-          <div className="flex gap-2 mt-2 flex-wrap">
-            {event.eventTypes.map((t) => (
-              <Badge key={t}>{t}</Badge>
-            ))}
-          </div>
+        <div className="flex flex-wrap gap-2 mt-2">
+          {event.eventTypes.map((t) => (
+            <Badge key={t}>{t}</Badge>
+          ))}
         </div>
 
-        {/* ISCRIZIONE */}
+        {/* CTA */}
         {user && (
-          <div className="flex gap-4 mb-6">
+          <div className="mt-4">
             {isRegistered ? (
-              <Button variant="secondary" onClick={handleUnregister}>
+              <Button
+                variant="secondary"
+                className="w-full"
+                onClick={handleUnregister}
+              >
                 Disiscriviti
               </Button>
             ) : (
-              <Button variant="primary" onClick={handleRegister}>
+              <Button className="w-full" onClick={handleRegister}>
                 Iscriviti
               </Button>
             )}
           </div>
         )}
 
-        {/* 🔥 MODIFICA + ELIMINA (creator o admin) */}
+        {user && !isCreator && isRegistered && (
+          <Button
+            className="w-full mt-2"
+            onClick={handleStartConversationWithCreator}
+          >
+            Contatta organizzatore
+          </Button>
+        )}
+
         {canManage && (
-          <div className="flex gap-4 mb-10">
-            <Link to={`/events/${eventId}/edit`}>
-              <Button variant="primary">Modifica evento</Button>
+          <div className="flex gap-2 mt-4">
+            <Link to={`/events/${eventId}/edit`} className="flex-1">
+              <Button variant="secondary" className="w-full">
+                Modifica
+              </Button>
             </Link>
 
             <Button variant="danger" onClick={handleDelete}>
-              Elimina evento
+              Elimina
             </Button>
           </div>
         )}
       </Card>
 
-      {/* LISTA ISCRITTI (solo creator o admin) */}
+      {/* REGISTRATIONS */}
       {canManage && (
-        <Card>
-          <h2 className="text-xl font-semibold mb-3">Iscritti</h2>
+        <Card className="mt-5 p-4">
+          <h2 className="font-semibold text-zinc-900 mb-3">Iscritti</h2>
 
           {registrations.length === 0 ? (
-            <p className="text-gray-600">Nessun iscritto</p>
+            <p className="text-zinc-600 text-sm">Nessun iscritto</p>
           ) : (
-            <ul className="space-y-2">
+            <div className="flex flex-col gap-3">
               {registrations.map((r) => (
-                <li
-                  key={r.id}
-                  className="p-3 bg-gray-50 rounded shadow flex justify-between"
-                >
-                  <span>{r.user.name}</span>
-                  <span className="text-gray-500 text-sm">{r.user.email}</span>
-                </li>
+                <div key={r.id} className="flex items-center justify-between">
+                  <div>
+                    <p className="text-sm font-medium text-zinc-900">
+                      {r.user.name}
+                    </p>
+                    <p className="text-xs text-zinc-600">{r.user.email}</p>
+                  </div>
+
+                  <Button
+                    variant="primary"
+                    onClick={() => handleMessageUser(r.userId)}
+                    className="flex items-center justify-center gap-2"
+                  >
+                    <Send size={16} />
+                    <span className="text-sm">Contatta</span>
+                  </Button>
+                </div>
               ))}
-            </ul>
+            </div>
           )}
         </Card>
       )}

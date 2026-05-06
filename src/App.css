@@ -1,1 +1,47 @@
 @import "tailwindcss";
+
+:root {
+  /* PALETTE VIOLA ELEGANTE */
+  --primary-600: #6D28D9;
+  --primary-500: #7C3AED;
+  --primary-400: #A78BFA;
+  --primary-300: #C4B5FD;
+
+  /* GRIGI NEUTRI */
+  --gray-900: #18181B;
+  --gray-700: #3F3F46;
+  --gray-500: #71717A;
+  --gray-300: #D4D4D8;
+  --gray-100: #F4F4F5;
+
+  /* ACCENTI */
+  --success: #10B981;
+  --error: #EF4444;
+  /* Testi */
+   --text-primary: #000000;   /* nero in light */
+  --text-secondary: #3F3F46; /* grigio scuro */
+  /* BACKGROUND */
+  --bg: #FFFFFF;
+  --bg-subtle: #FAF9FF;
+}
+
+/* DARK MODE (non attiva, ma pronta) */
+.dark {
+  --bg: #0B0B0F;
+  --bg-subtle: #13131A;
+
+  --gray-100: #1E1E24;
+  --gray-300: #2A2A32;
+  --gray-500: #A1A1AA;
+  --gray-700: #D4D4D8;
+  --gray-900: #FFFFFF;
+
+  --primary-600: #5B21B6;
+  --primary-500: #6D28D9;
+  --primary-400: #8B5CF6;
+  --primary-300: #A78BFA;
+
+  /* Testi */
+   --text-primary: #000000;   /* nero in light */
+  --text-secondary: #3F3F46; /* grigio scuro */
+}

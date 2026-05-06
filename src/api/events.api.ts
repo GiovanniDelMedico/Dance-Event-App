@@ -1,5 +1,5 @@
 import { http, API_URL } from "./http";
-import type { Event,EventFormData } from "../modules/events/types";
+import type { Event, EventFormData } from "../modules/events/types";
 
 // GET /events
 export function getEvents(filters?: {
@@ -22,6 +22,7 @@ export function getEvents(filters?: {
   return http<Event[]>(`/events${query}`);
 }
 
+
 // GET /events/:id
 export function getEventById(id: number) {
   return http<Event>(`/events/${id}`);
@@ -31,7 +32,7 @@ export function getEventById(id: number) {
 export function createEvent(data: EventFormData, token: string) {
   return http<Event>("/events", {
     method: "POST",
-    body: JSON.stringify(data),
+    body: data,   // ✔ oggetto, NON stringa
     token,
   });
 }
@@ -40,7 +41,7 @@ export function createEvent(data: EventFormData, token: string) {
 export function updateEvent(id: number, data: EventFormData, token: string) {
   return http<Event>(`/events/${id}`, {
     method: "PUT",
-    body: JSON.stringify(data),
+    body: data,   // ✔ oggetto, NON stringa
     token,
   });
 }
@@ -57,7 +58,7 @@ export function deleteEvent(id: number, token: string) {
 export function registerToEvent(eventId: number, token: string) {
   return http(`/events/${eventId}/register`, {
     method: "POST",
-    body: JSON.stringify({}),
+    body: {},   // ✔ oggetto vuoto, NON stringa
     token,
   });
 }
@@ -85,6 +86,15 @@ export function checkIsRegistered(eventId: number, token: string) {
     token,
   });
 }
+// GET /users/me/registered-events
+// (nuovo endpoint: eventi a cui l’utente è iscritto)
+// --------------------------------------------------
+export function getRegisteredEvents(token: string) {
+  return http<{ events: Event[] }>("/users/me/registered-events", {
+    method: "GET",
+    token,
+  });
+}
 
 // POST /events/upload (form-data)
 export async function uploadImage(file: File, token: string): Promise<{ url: string }> {
@@ -105,3 +115,6 @@ export async function uploadImage(file: File, token: string): Promise<{ url: str
 
   return res.json();
 }
+
+
+

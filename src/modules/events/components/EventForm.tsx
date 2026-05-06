@@ -2,7 +2,6 @@ import { useEffect, useState } from "react";
 import type { Event, EventFormData } from "../types";
 import { REGIONS } from "../../../constants/regions";
 
-// UI components
 import Input from "../../../ui/Input";
 import Select from "../../../ui/Select";
 import Button from "../../../ui/Button";
@@ -14,7 +13,11 @@ interface Props {
   loading?: boolean;
 }
 
-export default function EventForm({ initialData, onSubmit, loading }: Props) {
+export default function EventForm({
+  initialData,
+  onSubmit,
+  loading,
+}: Props) {
   const [title, setTitle] = useState("");
   const [description, setDescription] = useState("");
   const [date, setDate] = useState("");
@@ -25,12 +28,11 @@ export default function EventForm({ initialData, onSubmit, loading }: Props) {
   const [imageFile, setImageFile] = useState<File | null>(null);
   const [imagePreview, setImagePreview] = useState<string | null>(null);
 
-  // Precompila i campi se siamo in modalità "edit"
   useEffect(() => {
     if (initialData) {
       setTitle(initialData.title);
       setDescription(initialData.description);
-      setDate(initialData.date.slice(0, 10)); // ISO → yyyy-mm-dd
+      setDate(initialData.date.slice(0, 10));
       setRegion(initialData.region);
       setCity(initialData.city);
       setCategory(initialData.category);
@@ -73,81 +75,68 @@ export default function EventForm({ initialData, onSubmit, loading }: Props) {
     onSubmit(data, imageFile);
   }
 
+  const chipBase =
+    "px-3 py-1 rounded-full text-sm cursor-pointer transition border";
+
   return (
-    <Card className="max-w-2xl mx-auto">
+    <Card className="max-w-2xl mx-auto p-5">
+
       <form onSubmit={handleSubmit} className="space-y-6">
 
-        {/* TITOLO */}
+        {/* HEADER */}
         <div>
-          <label className="block mb-1 font-medium">Titolo</label>
+          <h2 className="text-xl font-semibold">
+            {initialData ? "Modifica evento" : "Crea evento"}
+          </h2>
+          <p className="text-sm text-zinc-500">
+            Compila i dettagli del tuo evento
+          </p>
+        </div>
+
+        {/* GRID BASE INFO */}
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+
           <Input
             value={title}
             onChange={(e) => setTitle(e.target.value)}
             placeholder="Titolo evento"
             required
           />
-        </div>
 
-        {/* DESCRIZIONE */}
-        <div>
-          <label className="block mb-1 font-medium">Descrizione</label>
-          <textarea
-            value={description}
-            onChange={(e) => setDescription(e.target.value)}
-            placeholder="Descrizione"
-            required
-            className="w-full px-3 py-2 border rounded-md bg-white focus:outline-none focus:ring-2 focus:ring-blue-500"
-          />
-        </div>
-
-        {/* DATA */}
-        <div>
-          <label className="block mb-1 font-medium">Data</label>
           <Input
             type="date"
             value={date}
             onChange={(e) => setDate(e.target.value)}
             required
           />
-        </div>
 
-        {/* REGIONE */}
-        <div>
-          <label className="block mb-1 font-medium">Regione</label>
+          <Input
+            value={city}
+            onChange={(e) => setCity(e.target.value)}
+            placeholder="Città"
+            required
+          />
+
           <Select
             value={region}
             onChange={(e) => setRegion(e.target.value)}
             required
           >
-            <option value="">Seleziona regione</option>
+            <option value="">Regione</option>
             {REGIONS.map((reg) => (
               <option key={reg} value={reg}>
                 {reg}
               </option>
             ))}
           </Select>
-        </div>
 
-        {/* CITTÀ */}
-        <div>
-          <label className="block mb-1 font-medium">Città</label>
-          <Input
-            value={city}
-            onChange={(e) => setCity(e.target.value)}
-            placeholder="Bologna, Milano..."
-            required
-          />
-        </div>
-
-        {/* CATEGORIA */}
-        <div>
-          <label className="block mb-1 font-medium">Categoria</label>
           <Select
             value={category}
             onChange={(e) => setCategory(e.target.value)}
             required
+            className="sm:col-span-2"
           >
-            <option value="">Seleziona categoria</option>
+            <option value="">Categoria</option>
             <option value="Danza">Danza</option>
             <option value="Hip Hop">Hip Hop</option>
             <option value="Breakdance">Breakdance</option>
@@ -157,49 +146,81 @@ export default function EventForm({ initialData, onSubmit, loading }: Props) {
           </Select>
         </div>
 
-        {/* EVENT TYPES */}
-        <div>
-          <label className="block mb-2 font-medium">Tipi evento</label>
+        {/* DESCRIPTION */}
+        <textarea
+          value={description}
+          onChange={(e) => setDescription(e.target.value)}
+          placeholder="Descrizione evento..."
+          className="
+            w-full min-h-[120px]
+            px-3 py-2 rounded-lg
+            bg-zinc-100
+            text-zinc-900
+            border border-zinc-300
+            outline-none
+            focus:ring-2 focus:ring-purple-300 focus:border-purple-500
+          "
+          required
+        />
 
-          <div className="grid grid-cols-2 gap-2">
-            {["Battle", "Workshop", "Showcase", "Stage"].map((type) => (
-              <label key={type} className="flex items-center gap-2">
-                <input
-                  type="checkbox"
-                  checked={eventTypes.includes(type)}
-                  onChange={() => toggleEventType(type)}
-                />
-                {type}
-              </label>
-            ))}
+        {/* EVENT TYPES (CHIPS) */}
+        <div>
+          <p className="text-sm font-medium mb-2">Tipi evento</p>
+
+          <div className="flex flex-wrap gap-2">
+            {["Battle", "Workshop", "Showcase", "Stage"].map((type) => {
+              const active = eventTypes.includes(type);
+
+              return (
+                <div
+                  key={type}
+                  onClick={() => toggleEventType(type)}
+                  className={`
+                    ${chipBase}
+                    ${
+                      active
+                        ? "bg-purple-600 text-white border-purple-600"
+                        : "bg-zinc-100 text-zinc-700 border-zinc-300"
+                    }
+                  `}
+                >
+                  {type}
+                </div>
+              );
+            })}
           </div>
         </div>
 
-        {/* IMMAGINE */}
+        {/* IMAGE UPLOAD */}
         <div>
-          <label className="block mb-2 font-medium">Immagine evento</label>
+          <p className="text-sm font-medium mb-2">Immagine</p>
 
           {imagePreview ? (
             <img
               src={imagePreview}
-              alt="Preview"
-              className="w-full h-48 object-cover rounded-md mb-3"
+              className="w-full h-48 object-cover rounded-lg mb-3"
             />
           ) : (
-            <div className="w-full h-48 bg-gray-200 rounded-md flex items-center justify-center mb-3">
+            <div className="w-full h-48 bg-zinc-200 rounded-lg flex items-center justify-center mb-3 text-zinc-500">
               Nessuna immagine
             </div>
           )}
 
-          <Input type="file" accept="image/*" onChange={handleImageChange} />
+          <Input
+            type="file"
+            accept="image/*"
+            onChange={handleImageChange}
+          />
         </div>
 
         {/* SUBMIT */}
-        <div className="pt-4">
-          <Button type="submit" variant="primary" disabled={loading}>
-            {loading ? "Salvataggio..." : "Salva evento"}
-          </Button>
-        </div>
+        <Button
+          type="submit"
+          disabled={loading}
+          className="w-full"
+        >
+          {loading ? "Salvataggio..." : "Salva evento"}
+        </Button>
       </form>
     </Card>
   );

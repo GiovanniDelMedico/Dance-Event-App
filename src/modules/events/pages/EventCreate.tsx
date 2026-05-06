@@ -27,13 +27,13 @@ export default function EventCreate() {
     try {
       let imageUrl: string | null = null;
 
-      // 1️⃣ Upload immagine se presente
+      // Upload immagine
       if (imageFile) {
         const uploadRes = await uploadImage(imageFile, token);
         imageUrl = uploadRes.url;
       }
 
-      // 2️⃣ Creazione evento
+      // Creazione evento
       const finalData: EventFormData = {
         ...data,
         image: imageUrl,
@@ -42,8 +42,6 @@ export default function EventCreate() {
       const created = await createEvent(finalData, token);
 
       toast.success("Evento creato con successo!");
-
-      // 3️⃣ Redirect
       navigate(`/events/${created.id}`);
 
     } catch (err: any) {
@@ -58,19 +56,24 @@ export default function EventCreate() {
   return (
     <div className="max-w-3xl mx-auto py-10 px-4">
 
-      <Card className="mb-6">
-        <h1 className="text-2xl font-bold mb-2">Crea un nuovo evento</h1>
-        <p className="text-gray-600">
+      {/* HEADER CARD */}
+      <Card className="p-6 mb-6">
+        <h1 className="text-2xl font-bold text-zinc-900 mb-1">
+          Crea un nuovo evento
+        </h1>
+
+        <p className="text-sm text-zinc-600">
           Compila i campi qui sotto per aggiungere un nuovo evento alla piattaforma.
         </p>
 
         {error && (
-          <p className="mt-4 text-red-600 font-medium">
+          <p className="mt-4 text-sm text-red-600 font-medium bg-red-100 p-2 rounded-md">
             {error}
           </p>
         )}
       </Card>
 
+      {/* FORM */}
       <EventForm
         onSubmit={handleSubmit}
         loading={loading}

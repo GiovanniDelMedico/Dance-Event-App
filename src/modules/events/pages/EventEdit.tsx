@@ -25,7 +25,7 @@ export default function EventEdit() {
       try {
         const data = await getEventById(eventId);
         setEvent(data);
-      } catch (err) {
+      } catch {
         setError("Errore nel caricamento dell'evento");
       } finally {
         setLoading(false);
@@ -35,7 +35,7 @@ export default function EventEdit() {
     load();
   }, [eventId]);
 
-  // 🔐 Controllo creator (super importante)
+  // Controllo creator
   if (!loading && event && user && event.creatorId !== user.id) {
     return <Navigate to="/events" replace />;
   }
@@ -52,13 +52,13 @@ export default function EventEdit() {
     try {
       let imageUrl = event?.image || null;
 
-      // 1️⃣ Se l’utente ha caricato una nuova immagine → upload
+      // Upload nuova immagine
       if (imageFile) {
         const uploadRes = await uploadImage(imageFile, token);
         imageUrl = uploadRes.url;
       }
 
-      // 2️⃣ Aggiorniamo l’evento
+      // Aggiorna evento
       const finalData: EventFormData = {
         ...data,
         image: imageUrl,
@@ -67,8 +67,6 @@ export default function EventEdit() {
       await updateEvent(eventId, finalData, token);
 
       toast.success("Evento aggiornato con successo!");
-
-      // 3️⃣ Redirect alla pagina dell’evento
       navigate(`/events/${eventId}`);
 
     } catch (err: any) {
@@ -80,20 +78,36 @@ export default function EventEdit() {
     }
   }
 
-  if (loading) return <p className="text-center py-10">Caricamento...</p>;
-  if (error || !event) return <p className="text-center py-10">{error || "Evento non trovato"}</p>;
+  if (loading) {
+    return (
+      <p className="text-center py-10 text-zinc-600">
+        Caricamento...
+      </p>
+    );
+  }
+
+  if (error || !event) {
+    return (
+      <p className="text-center py-10 text-zinc-600">
+        {error || "Evento non trovato"}
+      </p>
+    );
+  }
 
   return (
     <div className="max-w-3xl mx-auto py-10 px-4">
 
-      <Card className="mb-6">
-        <h1 className="text-2xl font-bold mb-2">Modifica evento</h1>
-        <p className="text-gray-600">
+      <Card className="p-6 mb-6">
+        <h1 className="text-2xl font-bold text-zinc-900 mb-1">
+          Modifica evento
+        </h1>
+
+        <p className="text-sm text-zinc-600">
           Aggiorna i campi qui sotto per modificare l'evento.
         </p>
 
         {error && (
-          <p className="mt-4 text-red-600 font-medium">
+          <p className="mt-4 text-sm text-red-600 font-medium bg-red-100 p-2 rounded-md">
             {error}
           </p>
         )}
