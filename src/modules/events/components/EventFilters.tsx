@@ -63,7 +63,7 @@ export default function EventFilters({ filters, setFilters }: Props) {
         className={base}
       >
         <option value="">Tutte le categorie</option>
-        <option value="Danza">Danza</option>
+        <option value="Mixstyle">Mixstyle</option>
         <option value="Hip Hop">Hip Hop</option>
         <option value="Breakdance">Breakdance</option>
         <option value="House">House</option>

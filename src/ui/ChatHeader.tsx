@@ -1,4 +1,5 @@
 import { useNavigate } from "react-router-dom";
+import Avatar from "../modules/users/Avatar"; // <-- IMPORT CORRETTO
 
 interface ChatHeaderProps {
   nickname: string;
@@ -53,29 +54,8 @@ export default function ChatHeader({
         </svg>
       </button>
 
-      {/* AVATAR */}
-      {avatarUrl ? (
-        <img
-          src={avatarUrl}
-          alt={nickname}
-          className="
-            w-10 h-10 rounded-full object-cover
-            border border-zinc-300
-          "
-        />
-      ) : (
-        <div
-          className="
-            w-10 h-10 rounded-full
-            bg-zinc-300
-            flex items-center justify-center
-            text-sm font-semibold
-            text-zinc-700
-          "
-        >
-          {nickname?.[0]?.toUpperCase()}
-        </div>
-      )}
+      {/* AVATAR (nuovo componente con fallback lucide-react) */}
+      <Avatar src={avatarUrl} alt={nickname} size={40} />
 
       {/* NICKNAME */}
       <div className="flex flex-col">

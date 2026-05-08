@@ -1,6 +1,7 @@
 import { Link, useNavigate } from "react-router-dom";
 import { useAuth } from "../context/AuthContext";
 import { useConversations } from "../modules/messages/hooks/useConversations";
+import Avatar from "../modules/users/Avatar"; // <-- IMPORT AGGIUNTO
 
 export default function Navbar() {
   const { user, logout } = useAuth();
@@ -82,13 +83,10 @@ export default function Navbar() {
           <div className="flex items-center gap-3">
             {/* AVATAR → PROFILO */}
             <Link to="/profile">
-              <img
-                src={user.avatarUrl || "/default-avatar.png"}
-                className="
-                  w-9 h-9 rounded-full
-                  border border-zinc-300 dark:border-zinc-700
-                  hover:opacity-80 transition
-                "
+              <Avatar
+                src={user.avatarUrl}
+                alt={user.nickname}
+                size={36}
               />
             </Link>
 

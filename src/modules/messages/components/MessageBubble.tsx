@@ -1,4 +1,5 @@
 import type { Message } from "../types";
+import Avatar from "../../users/Avatar";
 
 interface Props {
   message: Message;
@@ -7,8 +8,21 @@ interface Props {
 
 export default function MessageBubble({ message, isMine }: Props) {
   return (
-    <div className={`flex ${isMine ? "justify-end" : "justify-start"}`}>
-      
+    <div
+      className={`flex items-end gap-2 ${
+        isMine ? "justify-end" : "justify-start"
+      }`}
+    >
+      {/* Avatar SOLO per messaggi non miei */}
+      {!isMine && (
+        <Avatar
+          src={message.sender.avatarUrl}
+          alt={message.sender.nickname}
+          size={32}
+        />
+      )}
+
+      {/* Bolla */}
       <div
         className={`
           px-4 py-2
@@ -29,7 +43,6 @@ export default function MessageBubble({ message, isMine }: Props) {
       >
         {message.content}
       </div>
-
     </div>
   );
 }

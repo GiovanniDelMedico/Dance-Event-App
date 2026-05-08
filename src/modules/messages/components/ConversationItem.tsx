@@ -1,4 +1,5 @@
 import type { Conversation } from "../types";
+import Avatar from "../../users/Avatar"; // <-- IMPORT CORRETTO
 
 interface Props {
   conversation: Conversation;
@@ -26,25 +27,8 @@ function ConversationItem({ conversation, currentUserId, onClick }: Props) {
         transition
       "
     >
-      {/* AVATAR */}
-      {other.avatarUrl ? (
-        <img
-          src={other.avatarUrl}
-          alt={other.nickname}
-          className="w-10 h-10 rounded-full object-cover border border-zinc-300"
-        />
-      ) : (
-        <div
-          className="
-            w-10 h-10 rounded-full
-            bg-zinc-300
-            flex items-center justify-center
-            text-sm font-semibold text-zinc-700
-          "
-        >
-          {other.nickname[0].toUpperCase()}
-        </div>
-      )}
+      {/* AVATAR (nuovo componente con fallback lucide-react) */}
+      <Avatar src={other.avatarUrl} alt={other.nickname} size={40} />
 
       {/* Nome + ultimo messaggio */}
       <div className="flex-1 min-w-0">

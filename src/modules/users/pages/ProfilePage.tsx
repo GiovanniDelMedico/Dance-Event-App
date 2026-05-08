@@ -7,6 +7,7 @@ import Card from "../../../ui/Card";
 import { http } from "../../../api/http";
 import type { User } from "../types";
 import SubscribedEvents from "./SubscribedEvents";
+import Avatar from "../Avatar"; // <-- IMPORT AGGIUNTO
 
 export default function ProfilePage() {
   const { user, setUser } = useAuth();
@@ -89,16 +90,14 @@ export default function ProfilePage() {
       {/* PROFILE CARD */}
       <Card className="p-6">
         <div className="flex flex-col sm:flex-row items-center gap-6">
+          
           {/* AVATAR UPLOAD */}
           <div className="flex flex-col items-center gap-2">
-            <img
-              src={preview || "/default-avatar.png"}
-              className="
-      w-28 h-28 sm:w-32 sm:h-32
-      rounded-full object-cover
-      border border-zinc-200
-      shadow-sm
-    "
+
+            <Avatar
+              src={preview}
+              alt={user.nickname}
+              size={128} // 32 * 4
             />
 
             {/* Hidden input */}
@@ -114,9 +113,9 @@ export default function ProfilePage() {
             <button
               onClick={() => document.getElementById("avatar-input")?.click()}
               className="
-      text-sm text-purple-600 font-medium
-      hover:underline cursor-pointer
-    "
+                text-sm text-purple-600 font-medium
+                hover:underline cursor-pointer
+              "
             >
               Cambia immagine profilo
             </button>

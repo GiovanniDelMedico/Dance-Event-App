@@ -7,6 +7,7 @@ import Card from "../../../ui/Card";
 import Button from "../../../ui/Button";
 import Badge from "../../../ui/Badge";
 import toast from "react-hot-toast";
+import Avatar from "../../users/Avatar"; // <-- IMPORT AGGIUNTO
 
 interface Props {
   event: Event;
@@ -57,24 +58,25 @@ export default function EventCard({ event }: Props) {
         {/* OVERLAY */}
         <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-black/10 to-transparent" />
 
-        {/* TITLE + CREATOR */}
+        {/* TITLE */}
         <div className="absolute bottom-3 left-4 right-4">
           <h3 className="text-white text-lg font-semibold leading-tight drop-shadow">
             {event.title}
           </h3>
-
-          {/* CREATOR INFO */}
         </div>
       </Link>
 
       {/* CONTENT */}
       <div className="p-4 flex flex-col gap-2">
+
+        {/* CREATOR INFO */}
         <div className="flex items-center gap-2 mt-1">
-          <img
-            src={event.creator?.avatarUrl || "/default-avatar.png"}
-            className="w-6 h-6 rounded-full object-cover border border-white/40"
+          <Avatar
+            src={event.creator?.avatarUrl}
+            alt={event.creator?.nickname}
+            size={24}
           />
-          <span className="text-white/90 text-sm drop-shadow">
+          <span className="text-black text-sm">
             {event.creator?.nickname || "Organizzatore"}
           </span>
         </div>

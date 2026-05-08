@@ -2,6 +2,7 @@ import { Link, useLocation, useNavigate } from "react-router-dom";
 import { Home, Calendar, MessageCircle, User, Settings } from "lucide-react";
 import { useAuth } from "../context/AuthContext";
 import { useConversations } from "../modules/messages/hooks/useConversations";
+import Avatar from "../modules/users/Avatar"; // <-- IMPORT AGGIUNTO
 
 export default function MobileNav() {
   const location = useLocation();
@@ -64,9 +65,10 @@ export default function MobileNav() {
         <NavItem
           to="/profile"
           icon={
-            <img
-              src={user.avatarUrl || "/default-avatar.png"}
-              className="w-6 h-6 rounded-full object-cover border border-[var(--gray-300)]"
+            <Avatar
+              src={user.avatarUrl}
+              alt={user.nickname}
+              size={24}
             />
           }
           label="Profilo"
@@ -94,13 +96,7 @@ export default function MobileNav() {
   );
 }
 
-function NavItem({
-  to,
-  icon,
-  label,
-  active,
-  hidden,
-}: {
+function NavItem({ to, icon, label, active, hidden }: {
   to: string;
   icon: React.ReactNode;
   label: string;

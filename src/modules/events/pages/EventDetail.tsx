@@ -21,6 +21,7 @@ import Spinner from "../../../ui/Spinner";
 import toast from "react-hot-toast";
 import { http } from "../../../api/http";
 import { Send } from "lucide-react";
+import Avatar from "../../users/Avatar"; // <-- IMPORT AGGIUNTO
 
 export default function EventDetail() {
   const { id } = useParams();
@@ -199,14 +200,16 @@ export default function EventDetail() {
       {/* INFO */}
       <Card className="p-4 flex flex-col gap-3">
         <div className="flex items-center gap-2 mt-1">
-          <img
-            src={event.creator?.avatarUrl || "/default-avatar.png"}
-            className="w-6 h-6 rounded-full object-cover border border-white/40"
+          <Avatar
+            src={event.creator?.avatarUrl}
+            alt={event.creator?.nickname}
+            size={28}
           />
-          <span className="text-white/90 text-sm drop-shadow">
+          <span className="text-black text-sm">
             {event.creator?.nickname || "Organizzatore"}
           </span>
         </div>
+
         <p className="text-md text-black">
           {event.city}, {event.region}
         </p>
@@ -279,7 +282,12 @@ export default function EventDetail() {
             <div className="flex flex-col gap-3">
               {registrations.map((r) => (
                 <div key={r.id} className="flex items-center justify-between">
-                  <div>
+                  <div className="flex items-center gap-2">
+                    <Avatar
+                      src={r.user.avatarUrl}
+                      alt={r.user.nickname}
+                      size={28}
+                    />
                     <p className="text-sm font-medium text-zinc-900">
                       {r.user.nickname}
                     </p>

@@ -137,7 +137,7 @@ export default function EventForm({
             className="sm:col-span-2"
           >
             <option value="">Categoria</option>
-            <option value="Danza">Danza</option>
+            <option value="Mixstyle">Mixstyle</option>
             <option value="Hip Hop">Hip Hop</option>
             <option value="Breakdance">Breakdance</option>
             <option value="House">House</option>
