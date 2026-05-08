@@ -13,21 +13,21 @@ export async function getEvents(query: any) {
       date: {
         gte: date ? new Date(date) : new Date(),
       },
-      region: region
-        ? { contains: region, mode: "insensitive" }
-        : undefined,
-      city: city
-        ? { contains: city, mode: "insensitive" }
-        : undefined,
+      region: region ? { contains: region, mode: "insensitive" } : undefined,
+      city: city ? { contains: city, mode: "insensitive" } : undefined,
       category: category
         ? { contains: category, mode: "insensitive" }
         : undefined,
-      eventTypes: eventType
-        ? { has: eventType }
-        : undefined,
+      eventTypes: eventType ? { has: eventType } : undefined,
     },
     orderBy: { date: "asc" },
-    include: { creator: true },
+    include: {
+      creator: {
+        select: {
+          id: true,
+          nickname: true,
+          avatarUrl: true,
+        },}},
   });
 }
 
@@ -37,7 +37,15 @@ export async function getEvents(query: any) {
 export async function getEventById(id: number) {
   const event = await prisma.event.findUnique({
     where: { id },
-    include: { creator: true },
+    include: {
+      creator: {
+        select: {
+          id: true,
+          nickname: true,
+          avatarUrl: true,
+        },
+      },
+    },
   });
 
   if (!event) {
@@ -48,6 +56,7 @@ export async function getEventById(id: number) {
 
   return event;
 }
+
 
 // --------------------------------------------------
 // POST /events
@@ -60,7 +69,9 @@ export async function createEvent(userId: number, body: any) {
   }
 
   if (!Array.isArray(body.eventTypes) || body.eventTypes.length === 0) {
-    const err: any = new Error("Devi selezionare almeno una tipologia di evento");
+    const err: any = new Error(
+      "Devi selezionare almeno una tipologia di evento",
+    );
     err.status = 400;
     throw err;
   }
@@ -223,7 +234,7 @@ export async function getRegistrations(eventId: number, user: AuthUser) {
     where: { eventId },
     include: {
       user: {
-        select: { id: true, name: true, email: true },
+        select: { id: true, nickname: true, avatarUrl: true, },
       },
     },
   });
@@ -272,9 +283,8 @@ export async function uploadImage(file: Express.Multer.File | undefined) {
     throw err;
   }
 
-  const publicUrl = supabase.storage
-    .from("event-image")
-    .getPublicUrl(fileName).data.publicUrl;
+  const publicUrl = supabase.storage.from("event-image").getPublicUrl(fileName)
+    .data.publicUrl;
 
   return { url: publicUrl };
 }

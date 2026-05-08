@@ -49,7 +49,7 @@ export async function register(body: RegisterBody) {
       avatarUrl: user.avatarUrl, // 👈 IMPORTANTE
     },
     env.JWT_SECRET,
-    { expiresIn: "7d" }
+    { expiresIn: "7d" },
   );
 
   return {
@@ -95,7 +95,7 @@ export async function login(body: LoginBody) {
       avatarUrl: user.avatarUrl, // 👈 AGGIUNTO
     },
     env.JWT_SECRET,
-    { expiresIn: "7d" }
+    { expiresIn: "7d" },
   );
 
   return {
@@ -116,7 +116,7 @@ export async function login(body: LoginBody) {
 // --------------------------------------------------
 export async function uploadAvatar(
   userId: number,
-  file: Express.Multer.File | undefined
+  file: Express.Multer.File | undefined,
 ) {
   if (!file) {
     const err: any = new Error("Nessun file caricato");
@@ -143,9 +143,8 @@ export async function uploadAvatar(
   }
 
   // URL pubblica
-  const publicUrl = supabase.storage
-    .from("avatars")
-    .getPublicUrl(fileName).data.publicUrl;
+  const publicUrl = supabase.storage.from("avatars").getPublicUrl(fileName)
+    .data.publicUrl;
 
   // Salva nel DB
   const updated = await prisma.user.update({
@@ -157,14 +156,33 @@ export async function uploadAvatar(
   return updated; // { avatarUrl: "..." }
 }
 
-
 export async function getRegisteredEvents(userId: number) {
   const registrations = await prisma.eventRegistration.findMany({
     where: { userId },
     include: {
-      event: true,
+      event: {
+        include: {
+          creator: {
+            select: {
+              id: true,
+              nickname: true,
+              avatarUrl: true,
+            },
+          },
+        },
+      },
     },
   });
 
   return registrations.map((r) => r.event);
+} 
+export async function getUserById(id: number) {
+  return prisma.user.findUnique({
+    where: { id },
+    select: {
+      id: true,
+      nickname: true,
+      avatarUrl: true,
+    },
+  });
 }

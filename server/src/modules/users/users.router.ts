@@ -11,7 +11,7 @@ router.post("/register", usersController.register);
 // LOGIN
 router.post("/login", usersController.login);
 
-// UPLOAD AVATAR (nuovo)
+// UPLOAD AVATAR
 router.post(
   "/avatar",
   auth,
@@ -19,6 +19,11 @@ router.post(
   usersController.uploadAvatar
 );
 
+// EVENTI A CUI L'UTENTE È ISCRITTO
 router.get("/me/registered-events", auth, usersController.getRegisteredEvents);
+
+// 👇 **DEVE ESSERE L’ULTIMA ROUTE DINAMICA**
+// GET /users/:id  → usata dalla chat per recuperare nickname + avatar
+router.get("/:id", auth, usersController.getUserById);
 
 export default router;

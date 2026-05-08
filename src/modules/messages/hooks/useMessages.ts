@@ -17,15 +17,22 @@ export function useMessages(conversationId: number) {
   }
 
   useEffect(() => {
-    // Carica subito i messaggi
-    loadMessages();
+    if (!conversationId) return;
 
-    // Polling ogni 2 secondi
-    const interval = setInterval(() => {
+    let interval: number;
+
+    function tick() {
+      // Evita richieste inutili quando la tab non è attiva
+      if (!document.hasFocus()) return;
       loadMessages();
-    }, 1000);
+    }
 
-    // Cleanup quando cambia conversazione o si smonta il componente
+    // Carica subito
+    tick();
+
+    // Polling ogni 3 secondi
+    interval = window.setInterval(tick, 3000);
+
     return () => clearInterval(interval);
   }, [conversationId]);
 

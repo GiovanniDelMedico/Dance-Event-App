@@ -3,7 +3,9 @@ import * as usersService from "./users.service";
 import { RegisterBody, LoginBody } from "./users.types";
 import { AuthRequest } from "../../middleware/auth";
 
+// --------------------------------------------------
 // POST /users/register
+// --------------------------------------------------
 export async function register(
   req: Request<{}, {}, RegisterBody>,
   res: Response,
@@ -17,7 +19,9 @@ export async function register(
   }
 }
 
+// --------------------------------------------------
 // POST /users/login
+// --------------------------------------------------
 export async function login(
   req: Request<{}, {}, LoginBody>,
   res: Response,
@@ -31,7 +35,9 @@ export async function login(
   }
 }
 
+// --------------------------------------------------
 // POST /users/avatar
+// --------------------------------------------------
 export async function uploadAvatar(
   req: AuthRequest,
   res: Response,
@@ -45,13 +51,42 @@ export async function uploadAvatar(
   }
 }
 
-export async function getRegisteredEvents(req: any, res: Response) {
+// --------------------------------------------------
+// GET /users/:id  ← NECESSARIO PER LA CHAT
+// --------------------------------------------------
+export async function getUserById(
+  req: AuthRequest,
+  res: Response,
+  next: NextFunction
+) {
   try {
-    const userId = req.user.id;
+    const id = Number(req.params.id);
+
+    const user = await usersService.getUserById(id);
+
+    if (!user) {
+      return res.status(404).json({ error: "Utente non trovato" });
+    }
+
+    res.json(user);
+  } catch (err) {
+    next(err);
+  }
+}
+
+// --------------------------------------------------
+// GET /users/registered-events
+// --------------------------------------------------
+export async function getRegisteredEvents(
+  req: AuthRequest,
+  res: Response,
+  next: NextFunction
+) {
+  try {
+    const userId = req.user!.id;
     const events = await usersService.getRegisteredEvents(userId);
     res.json({ events });
   } catch (err) {
-    console.error(err);
-    res.status(500).json({ error: "Errore nel caricamento degli eventi iscritti" });
+    next(err);
   }
 }

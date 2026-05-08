@@ -35,6 +35,9 @@ export default function EventDetail() {
   const [registrations, setRegistrations] = useState<any[]>([]);
   const [error, setError] = useState("");
 
+  // --------------------------------------------------
+  // CARICA EVENTO + REGISTRAZIONI
+  // --------------------------------------------------
   useEffect(() => {
     async function load() {
       try {
@@ -62,6 +65,9 @@ export default function EventDetail() {
     load();
   }, [eventId, token, user]);
 
+  // --------------------------------------------------
+  // ISCRIZIONE / DISISCRIZIONE
+  // --------------------------------------------------
   async function handleRegister() {
     if (!token) return;
 
@@ -84,6 +90,9 @@ export default function EventDetail() {
     }
   }
 
+  // --------------------------------------------------
+  // CHAT: CONTATTA ORGANIZZATORE
+  // --------------------------------------------------
   async function handleStartConversationWithCreator() {
     if (!event || !user) return;
 
@@ -96,12 +105,19 @@ export default function EventDetail() {
         },
       });
 
-      navigate(`/messages/${conversation.id}`);
+      navigate(`/messages/${conversation.id}`, {
+        state: {
+          otherUserId: event.creatorId,
+        },
+      });
     } catch {
       toast.error("Errore nell'apertura della chat");
     }
   }
 
+  // --------------------------------------------------
+  // CHAT: CONTATTA ISCRITTO
+  // --------------------------------------------------
   async function handleMessageUser(participantId: number) {
     if (!event) return;
 
@@ -114,12 +130,19 @@ export default function EventDetail() {
         },
       });
 
-      navigate(`/messages/${conversation.id}`);
+      navigate(`/messages/${conversation.id}`, {
+        state: {
+          otherUserId: participantId,
+        },
+      });
     } catch {
       toast.error("Errore nell'apertura della chat");
     }
   }
 
+  // --------------------------------------------------
+  // ELIMINA EVENTO
+  // --------------------------------------------------
   async function handleDelete() {
     if (!token) return;
 
@@ -135,6 +158,9 @@ export default function EventDetail() {
     }
   }
 
+  // --------------------------------------------------
+  // RENDER
+  // --------------------------------------------------
   if (loading) return <Spinner />;
 
   if (error || !event)
@@ -172,6 +198,15 @@ export default function EventDetail() {
 
       {/* INFO */}
       <Card className="p-4 flex flex-col gap-3">
+        <div className="flex items-center gap-2 mt-1">
+          <img
+            src={event.creator?.avatarUrl || "/default-avatar.png"}
+            className="w-6 h-6 rounded-full object-cover border border-white/40"
+          />
+          <span className="text-white/90 text-sm drop-shadow">
+            {event.creator?.nickname || "Organizzatore"}
+          </span>
+        </div>
         <p className="text-md text-black">
           {event.city}, {event.region}
         </p>
@@ -191,7 +226,7 @@ export default function EventDetail() {
         </div>
 
         {/* CTA */}
-        {user && (
+        {user && !isCreator && (
           <div className="mt-4">
             {isRegistered ? (
               <Button
@@ -246,9 +281,8 @@ export default function EventDetail() {
                 <div key={r.id} className="flex items-center justify-between">
                   <div>
                     <p className="text-sm font-medium text-zinc-900">
-                      {r.user.name}
+                      {r.user.nickname}
                     </p>
-                    <p className="text-xs text-zinc-600">{r.user.email}</p>
                   </div>
 
                   <Button

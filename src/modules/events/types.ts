@@ -3,14 +3,22 @@ export interface Event {
   id: number;
   title: string;
   description: string;
-  date: string; // ISO string
+  date: string;
   region: string;
   city: string;
   category: string;
   image: string | null;
-  eventTypes: string[]; // es: ["Battle", "Workshop"]
+  eventTypes: string[];
   creatorId: number;
+
+ 
+  creator: {
+    id: number;
+    nickname: string;
+    avatarUrl?: string | null;
+  };
 }
+
 
 // Tipo usato per creare o modificare un evento
 export interface EventFormData {

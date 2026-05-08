@@ -36,7 +36,6 @@ export default function EventCard({ event }: Props) {
 
   return (
     <Card className="overflow-hidden p-0">
-
       {/* IMAGE */}
       <Link to={`/events/${event.id}`} className="block relative group">
         {event.image ? (
@@ -58,16 +57,27 @@ export default function EventCard({ event }: Props) {
         {/* OVERLAY */}
         <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-black/10 to-transparent" />
 
-        {/* TITLE */}
+        {/* TITLE + CREATOR */}
         <div className="absolute bottom-3 left-4 right-4">
           <h3 className="text-white text-lg font-semibold leading-tight drop-shadow">
             {event.title}
           </h3>
+
+          {/* CREATOR INFO */}
         </div>
       </Link>
 
       {/* CONTENT */}
       <div className="p-4 flex flex-col gap-2">
+        <div className="flex items-center gap-2 mt-1">
+          <img
+            src={event.creator?.avatarUrl || "/default-avatar.png"}
+            className="w-6 h-6 rounded-full object-cover border border-white/40"
+          />
+          <span className="text-white/90 text-sm drop-shadow">
+            {event.creator?.nickname || "Organizzatore"}
+          </span>
+        </div>
 
         {/* LOCATION */}
         <p className="text-md text-black">
@@ -88,7 +98,6 @@ export default function EventCard({ event }: Props) {
 
         {/* ACTIONS */}
         <div className="flex items-center justify-between mt-4">
-
           <Link to={`/events/${event.id}`} className="flex-1">
             <Button className="w-full">Dettagli</Button>
           </Link>

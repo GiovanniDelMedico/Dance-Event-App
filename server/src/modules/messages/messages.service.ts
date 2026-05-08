@@ -18,24 +18,25 @@ export async function createConversationService({
     throw err;
   }
 
-  // 🔥 Cerca una conversazione ESISTENTE tra i due utenti
+  // 🔥 Cerca una conversazione ESISTENTE tra i due utenti (indipendente dall'evento)
   const existing = await prisma.conversation.findFirst({
     where: {
-      AND: [
-        { eventId: eventId ?? null },
-        {
-          OR: [
-            { creatorId: userId, participantId: participantId },
-            { creatorId: participantId, participantId: userId },
-          ],
-        },
+      OR: [
+        { creatorId: userId, participantId },
+        { creatorId: participantId, participantId: userId },
       ],
+    },
+    include: {
+      messages: {
+        orderBy: { createdAt: "desc" },
+        include: { sender: true },
+      },
     },
   });
 
   if (existing) return existing;
 
-  // 🔥 Crea nuova conversazione
+  // 🔥 Crea nuova conversazione (eventId è solo un metadato)
   return prisma.conversation.create({
     data: {
       creatorId: userId,
@@ -70,7 +71,7 @@ export async function getConversationsService(userId: number) {
           id: true,
           content: true,
           createdAt: true,
-          readAt: true, 
+          readAt: true,
           sender: { select: { id: true, nickname: true } },
         },
       },
@@ -100,7 +101,7 @@ export async function getConversationsService(userId: number) {
     const hasUnread =
       lastMessage &&
       lastMessage.sender.id !== userId &&
-      lastMessage.readAt === null; // 👈 FIX PROFESSIONALE
+      lastMessage.readAt === null;
 
     return {
       ...conv,
@@ -117,7 +118,6 @@ export async function getMessagesService(
   conversationId: number,
   userId: number
 ) {
-  // Controllo accesso
   const conversation = await prisma.conversation.findUnique({
     where: { id: conversationId },
   });
@@ -134,7 +134,6 @@ export async function getMessagesService(
     throw err;
   }
 
-  // 🔥 Ritorna i messaggi con readAt
   return prisma.message.findMany({
     where: { conversationId },
     orderBy: { createdAt: "asc" },
@@ -142,8 +141,8 @@ export async function getMessagesService(
       id: true,
       content: true,
       createdAt: true,
-      readAt: true, // 👈 AGGIUNTO
-      sender: { select: { id: true, nickname: true, avatarUrl:true,} },
+      readAt: true,
+      sender: { select: { id: true, nickname: true, avatarUrl: true } },
     },
   });
 }
@@ -166,7 +165,6 @@ export async function sendMessageService({
     throw err;
   }
 
-  // Controllo accesso
   const conversation = await prisma.conversation.findUnique({
     where: { id: conversationId },
   });
@@ -183,7 +181,6 @@ export async function sendMessageService({
     throw err;
   }
 
-  // Crea messaggio
   return prisma.message.create({
     data: {
       conversationId,
@@ -203,7 +200,6 @@ export async function markConversationAsReadService(
   conversationId: number,
   userId: number
 ) {
-  // Controllo accesso
   const conversation = await prisma.conversation.findUnique({
     where: { id: conversationId },
   });
@@ -220,7 +216,6 @@ export async function markConversationAsReadService(
     throw err;
   }
 
-  // 🔥 Marca come letti tutti i messaggi dell'altro utente
   await prisma.message.updateMany({
     where: {
       conversationId,

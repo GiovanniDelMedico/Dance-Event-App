@@ -15,22 +15,22 @@ export function useConversations() {
     try {
       const data = await http<Conversation[]>("/messages");
 
-      // 🔥 Calcola hasUnread usando readAt
+      // Calcola hasUnread
       const withUnread = data.map((c) => {
         const last = c.messages[0];
 
         const hasUnread =
           last &&
           last.sender.id !== currentUserId &&
-          last.readAt === null; // 👈 ora usiamo readAt
+          last.readAt === null;
 
         return { ...c, hasUnread };
       });
 
-      // 🔥 Navbar: almeno un messaggio non letto?
+      // Navbar: almeno un messaggio non letto?
       setHasAnyUnread(withUnread.some((c) => c.hasUnread));
 
-      // 🔥 Ordina per ultimo messaggio
+      // Ordina per ultimo messaggio
       const sorted = [...withUnread].sort((a, b) => {
         const aTime = a.messages[0]?.createdAt
           ? new Date(a.messages[0].createdAt).getTime()
@@ -51,13 +51,23 @@ export function useConversations() {
   }
 
   useEffect(() => {
-  if (!currentUserId) return; // 👈 BLOCCA TUTTO FINCHÉ NON SEI LOGGATO
+    if (!currentUserId) return;
 
-  loadConversations();
-  const interval = setInterval(loadConversations, 1000);
-  return () => clearInterval(interval);
-}, [currentUserId]);
+    let interval: number;
+
+    function tick() {
+      if (!document.hasFocus()) return;
+      loadConversations();
+    }
+
+    // Carica subito
+    tick();
+
+    // Polling ogni 3 secondi
+    interval = window.setInterval(tick, 3000);
+
+    return () => clearInterval(interval);
+  }, [currentUserId]);
 
   return { conversations, loading, hasAnyUnread };
 }
-

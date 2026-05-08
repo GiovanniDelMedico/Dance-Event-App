@@ -1,5 +1,5 @@
-import { useEffect, useMemo } from "react";
-import { useParams } from "react-router-dom";
+import { useEffect, useMemo, useState } from "react";
+import { useParams, useLocation } from "react-router-dom";
 
 import { useMessages } from "../hooks/useMessages";
 import { useAuth } from "../../../context/AuthContext";
@@ -14,16 +14,35 @@ export default function ChatPage() {
   const { id } = useParams();
   const conversationId = Number(id);
 
-  const { user } = useAuth();
-  const { messages, loading } = useMessages(conversationId);
+  const location = useLocation();
+  const otherUserIdFromState = location.state?.otherUserId || null;
 
+  const { user } = useAuth();
   const userId = user?.id;
 
-  // Trova l’altro utente
-  const otherUser = useMemo(() => {
-    if (!userId || messages.length === 0) return null;
-    return messages.find((m) => m.sender.id !== userId)?.sender || null;
-  }, [messages, userId]);
+  const { messages, loading } = useMessages(conversationId);
+
+  const [otherUser, setOtherUser] = useState<any>(null);
+
+  // 🔥 Se non ci sono messaggi → recupera l’altro utente dal backend
+  useEffect(() => {
+    async function loadOtherUser() {
+      if (messages.length > 0) {
+        // Se ci sono messaggi → prendi il sender diverso da me
+        const u = messages.find((m) => m.sender.id !== userId)?.sender;
+        if (u) setOtherUser(u);
+        return;
+      }
+
+      // Se NON ci sono messaggi → usa l’ID passato dal navigate
+      if (otherUserIdFromState) {
+        const data = await http(`/users/${otherUserIdFromState}`);
+        setOtherUser(data);
+      }
+    }
+
+    loadOtherUser();
+  }, [messages, userId, otherUserIdFromState]);
 
   // Marca come letti
   useEffect(() => {
@@ -50,10 +69,11 @@ export default function ChatPage() {
     );
   }
 
+  // 🔥 Ora NON mostriamo più “conversazione non disponibile”
   if (!otherUser) {
     return (
       <div className="flex items-center justify-center h-screen text-zinc-500">
-        Conversazione non disponibile
+        Caricamento chat...
       </div>
     );
   }

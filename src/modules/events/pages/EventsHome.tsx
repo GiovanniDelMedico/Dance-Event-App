@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { getEvents } from "../../../api/events.api";
 import type { Event } from "../types";
+import OnboardingWizard from "../../onboarding/OnboardingWizard";
 
 import EventCard from "../components/EventCard";
 import EventFilters from "../components/EventFilters";
@@ -45,6 +46,8 @@ export default function EventsHome() {
   return (
     <div className="max-w-6xl mx-auto px-4 py-6">
 
+         <OnboardingWizard />
+
       {/* HEADER */}
       <div className="mb-6">
         <h1 className="text-2xl font-semibold text-zinc-900 tracking-tight">
@@ -57,7 +60,7 @@ export default function EventsHome() {
       </div>
 
       {/* FILTRI */}
-      <div className="mb-6">
+      <div id="event-filters" className="mb-6">
         <Card className="p-4">
           <EventFilters filters={filters} setFilters={setFilters} />
         </Card>

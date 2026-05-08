@@ -9,8 +9,6 @@ export default function MobileNav() {
   const { user, logout } = useAuth();
   const { hasAnyUnread } = useConversations();
 
-  const isActive = (path: string) => location.pathname.startsWith(path);
-
   function handleLogout() {
     logout();
     navigate("/login");
@@ -28,21 +26,24 @@ export default function MobileNav() {
         md:hidden
       "
     >
+      {/* HOME */}
       <NavItem
         to="/events"
         icon={<Home size={22} />}
         label="Home"
-        active={isActive("/events")}
+        active={location.pathname === "/events"}
       />
 
+      {/* CREA EVENTO */}
       <NavItem
         to="/events/create"
         icon={<Calendar size={22} />}
         label="Crea"
-        active={isActive("/events/create")}
+        active={location.pathname === "/events/create"}
         hidden={!user}
       />
 
+      {/* CHAT */}
       <NavItem
         to="/messages"
         icon={
@@ -54,10 +55,11 @@ export default function MobileNav() {
           </div>
         }
         label="Chat"
-        active={isActive("/messages")}
+        active={location.pathname.startsWith("/messages")}
         hidden={!user}
       />
 
+      {/* PROFILO */}
       {user ? (
         <NavItem
           to="/profile"
@@ -68,22 +70,24 @@ export default function MobileNav() {
             />
           }
           label="Profilo"
-          active={isActive("/profile")}
+          active={location.pathname === "/profile"}
         />
       ) : (
         <NavItem
           to="/login"
           icon={<User size={22} />}
           label="Login"
-          active={isActive("/login")}
+          active={location.pathname === "/login"}
         />
       )}
+
+      {/* OPZIONI */}
       {user && (
         <NavItem
           to="/options"
           icon={<Settings size={22} />}
           label="Opzioni"
-          active={isActive("/options")}
+          active={location.pathname === "/options"}
         />
       )}
     </nav>

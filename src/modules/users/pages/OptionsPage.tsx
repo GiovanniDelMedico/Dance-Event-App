@@ -1,9 +1,9 @@
-import { useTheme } from "../../../ui/hooks/useTheme";
+// import { useTheme } from "../../../ui/hooks/useTheme";
 import { useAuth } from "../../../context/AuthContext";
-import { Sun, Moon } from "lucide-react";
+// import { Sun, Moon } from "lucide-react";
 
 export default function OptionsPage() {
-  const { isDark, toggleTheme } = useTheme();
+  // const { isDark, toggleTheme } = useTheme();
   const { logout } = useAuth();
 
   return (
@@ -15,7 +15,7 @@ export default function OptionsPage() {
       </h1>
 
       {/* CARD: TEMA */}
-      <div
+      {/* <div
         className="
           bg-white
           border border-zinc-300
@@ -45,7 +45,7 @@ export default function OptionsPage() {
         >
           {isDark ? <Sun size={20} /> : <Moon size={20} />}
         </button>
-      </div>
+      </div> */}
 
       {/* CARD: ACCOUNT */}
       <div
