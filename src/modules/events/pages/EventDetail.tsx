@@ -13,6 +13,7 @@ import {
 import type { Event } from "../types";
 import type { ConversationCreated } from "../../messages/types";
 import { useAuth } from "../../../context/AuthContext";
+import { formatEventDate } from "../../../utils/formatDate";
 
 import Button from "../../../ui/Button";
 import Badge from "../../../ui/Badge";
@@ -215,7 +216,8 @@ export default function EventDetail() {
         </p>
 
         <p className="text-md text-black">
-          {new Date(event.date).toLocaleDateString("it-IT")}
+          {formatEventDate(event.startDate, event.endDate)}
+
         </p>
 
         <p className="text-md text-black leading-relaxed">

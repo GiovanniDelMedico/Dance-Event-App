@@ -8,6 +8,7 @@ import Button from "../../../ui/Button";
 import Badge from "../../../ui/Badge";
 import toast from "react-hot-toast";
 import Avatar from "../../users/Avatar"; // <-- IMPORT AGGIUNTO
+import { formatEventDate } from "../../../utils/formatDate";
 
 interface Props {
   event: Event;
@@ -88,7 +89,7 @@ export default function EventCard({ event }: Props) {
 
         {/* DATE */}
         <p className="text-md text-black">
-          {new Date(event.date).toLocaleDateString("it-IT")}
+           {formatEventDate(event.startDate, event.endDate)}
         </p>
 
         {/* TYPES */}

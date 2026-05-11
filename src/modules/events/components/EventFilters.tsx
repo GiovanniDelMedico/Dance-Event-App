@@ -5,7 +5,8 @@ interface Filters {
   region: string;
   city: string;
   category: string;
-  date: string;
+  startDate: string;
+  endDate: string;
   eventType: string;
 }
 
@@ -71,11 +72,20 @@ export default function EventFilters({ filters, setFilters }: Props) {
         <option value="Locking">Locking</option>
       </select>
 
-      {/* DATA */}
+      {/* DATA INIZIO */}
       <input
         type="date"
-        name="date"
-        value={filters.date}
+        name="startDate"
+        value={filters.startDate}
+        onChange={handleChange}
+        className={base}
+      />
+
+      {/* DATA FINE */}
+      <input
+        type="date"
+        name="endDate"
+        value={filters.endDate}
         onChange={handleChange}
         className={base}
       />

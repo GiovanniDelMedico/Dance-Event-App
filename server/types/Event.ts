@@ -2,10 +2,18 @@ export interface Event {
   id: number;
   eventTypes: string[];
   title: string;
-  date: string;
+  description: string;
+
+  startDate: string;   // ISO string
+  endDate: string;     // ISO string
+
   region: string;
   city: string;
   category: string;
-  description: string;
-  image: string;
+  image: string | null;
+
+  createdAt: string;
+  updatedAt: string;
+
+  creatorId: number;
 }

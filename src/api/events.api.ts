@@ -6,7 +6,8 @@ export function getEvents(filters?: {
   region?: string;
   city?: string;
   category?: string;
-  date?: string;
+  startDate?: string;
+  endDate?: string;
   eventType?: string;
 }) {
   const params = new URLSearchParams();
@@ -14,13 +15,15 @@ export function getEvents(filters?: {
   if (filters?.region) params.append("region", filters.region);
   if (filters?.city) params.append("city", filters.city);
   if (filters?.category) params.append("category", filters.category);
-  if (filters?.date) params.append("date", filters.date);
+  if (filters?.startDate) params.append("startDate", filters.startDate);
+  if (filters?.endDate) params.append("endDate", filters.endDate);
   if (filters?.eventType) params.append("eventType", filters.eventType);
 
   const query = params.toString() ? `?${params.toString()}` : "";
 
   return http<Event[]>(`/events${query}`);
 }
+
 
 
 // GET /events/:id

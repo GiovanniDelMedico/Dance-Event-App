@@ -16,7 +16,8 @@ export default function EventsHome() {
     region: "",
     city: "",
     category: "",
-    date: "",
+    startDate: "",
+    endDate: "",
     eventType: "",
   });
 
@@ -45,8 +46,7 @@ export default function EventsHome() {
 
   return (
     <div className="max-w-6xl mx-auto px-4 py-6">
-
-         <OnboardingWizard />
+      <OnboardingWizard />
 
       {/* HEADER */}
       <div className="mb-6">
@@ -77,9 +77,7 @@ export default function EventsHome() {
       >
         {events.length === 0 && (
           <div className="col-span-full text-center py-10">
-            <p className="text-zinc-600">
-              Nessun evento trovato
-            </p>
+            <p className="text-zinc-600">Nessun evento trovato</p>
           </div>
         )}
 

@@ -6,28 +6,29 @@ import { AuthUser } from "../../middleware/auth";
 // GET /events
 // --------------------------------------------------
 export async function getEvents(query: any) {
-  const { region, city, category, date, eventType } = query;
+  const { region, city, category, startDate, endDate, eventType } = query;
 
   return prisma.event.findMany({
     where: {
-      date: {
-        gte: date ? new Date(date) : new Date(),
-      },
+      // Mostra eventi futuri o filtrati per range
+      startDate: startDate ? { gte: new Date(startDate) } : undefined,
+      endDate: endDate ? { lte: new Date(endDate) } : undefined,
+
       region: region ? { contains: region, mode: "insensitive" } : undefined,
       city: city ? { contains: city, mode: "insensitive" } : undefined,
-      category: category
-        ? { contains: category, mode: "insensitive" }
-        : undefined,
+      category: category ? { contains: category, mode: "insensitive" } : undefined,
       eventTypes: eventType ? { has: eventType } : undefined,
     },
-    orderBy: { date: "asc" },
+    orderBy: { startDate: "asc" },
     include: {
       creator: {
         select: {
           id: true,
           nickname: true,
           avatarUrl: true,
-        },}},
+        },
+      },
+    },
   });
 }
 
@@ -57,21 +58,27 @@ export async function getEventById(id: number) {
   return event;
 }
 
-
 // --------------------------------------------------
 // POST /events
 // --------------------------------------------------
 export async function createEvent(userId: number, body: any) {
-  if (new Date(body.date) < new Date()) {
-    const err: any = new Error("La data dell'evento deve essere futura");
+  const start = new Date(body.startDate);
+  const end = new Date(body.endDate);
+
+  if (start < new Date()) {
+    const err: any = new Error("La data di inizio deve essere futura");
+    err.status = 400;
+    throw err;
+  }
+
+  if (end < start) {
+    const err: any = new Error("La data di fine non può essere prima della data di inizio");
     err.status = 400;
     throw err;
   }
 
   if (!Array.isArray(body.eventTypes) || body.eventTypes.length === 0) {
-    const err: any = new Error(
-      "Devi selezionare almeno una tipologia di evento",
-    );
+    const err: any = new Error("Devi selezionare almeno una tipologia di evento");
     err.status = 400;
     throw err;
   }
@@ -80,11 +87,12 @@ export async function createEvent(userId: number, body: any) {
     data: {
       title: body.title,
       description: body.description,
-      date: new Date(body.date),
+      startDate: start,
+      endDate: end,
       region: body.region,
       city: body.city,
       category: body.category,
-      image: body.image,
+      image: body.image ?? null,
       eventTypes: body.eventTypes,
       creatorId: userId,
     },
@@ -109,10 +117,25 @@ export async function updateEvent(id: number, user: AuthUser, body: any) {
     throw err;
   }
 
-  if (body.date && new Date(body.date) < new Date()) {
-    const err: any = new Error("La data dell'evento deve essere futura");
-    err.status = 400;
-    throw err;
+  // Validazioni date
+  if (body.startDate) {
+    const start = new Date(body.startDate);
+    if (start < new Date()) {
+      const err: any = new Error("La data di inizio deve essere futura");
+      err.status = 400;
+      throw err;
+    }
+  }
+
+  if (body.endDate) {
+    const end = new Date(body.endDate);
+    const start = body.startDate ? new Date(body.startDate) : existing.startDate;
+
+    if (end < start) {
+      const err: any = new Error("La data di fine non può essere prima della data di inizio");
+      err.status = 400;
+      throw err;
+    }
   }
 
   if (body.eventTypes && !Array.isArray(body.eventTypes)) {
@@ -124,9 +147,10 @@ export async function updateEvent(id: number, user: AuthUser, body: any) {
   return prisma.event.update({
     where: { id },
     data: {
-      title: body.title,
-      description: body.description,
-      date: body.date ? new Date(body.date) : undefined,
+      title: body.title ?? undefined,
+      description: body.description ?? undefined,
+      startDate: body.startDate ? new Date(body.startDate) : undefined,
+      endDate: body.endDate ? new Date(body.endDate) : undefined,
       region: body.region ?? undefined,
       city: body.city ?? undefined,
       category: body.category ?? undefined,
@@ -234,7 +258,7 @@ export async function getRegistrations(eventId: number, user: AuthUser) {
     where: { eventId },
     include: {
       user: {
-        select: { id: true, nickname: true, avatarUrl: true, },
+        select: { id: true, nickname: true, avatarUrl: true },
       },
     },
   });
@@ -283,8 +307,9 @@ export async function uploadImage(file: Express.Multer.File | undefined) {
     throw err;
   }
 
-  const publicUrl = supabase.storage.from("event-image").getPublicUrl(fileName)
-    .data.publicUrl;
+  const publicUrl = supabase.storage
+    .from("event-image")
+    .getPublicUrl(fileName).data.publicUrl;
 
   return { url: publicUrl };
 }

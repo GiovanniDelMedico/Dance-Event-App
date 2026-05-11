@@ -20,7 +20,11 @@ export default function EventForm({
 }: Props) {
   const [title, setTitle] = useState("");
   const [description, setDescription] = useState("");
-  const [date, setDate] = useState("");
+
+  // 🔥 NUOVI CAMPI
+  const [startDate, setStartDate] = useState("");
+  const [endDate, setEndDate] = useState("");
+
   const [region, setRegion] = useState("");
   const [city, setCity] = useState("");
   const [category, setCategory] = useState("");
@@ -32,7 +36,11 @@ export default function EventForm({
     if (initialData) {
       setTitle(initialData.title);
       setDescription(initialData.description);
-      setDate(initialData.date.slice(0, 10));
+
+      // 🔥 PRECOMPILA LE DATE
+      setStartDate(initialData.startDate.slice(0, 10));
+      setEndDate(initialData.endDate.slice(0, 10));
+
       setRegion(initialData.region);
       setCity(initialData.city);
       setCategory(initialData.category);
@@ -61,10 +69,17 @@ export default function EventForm({
   function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
 
+    // 🔥 VALIDAZIONE DATE
+    if (new Date(endDate) < new Date(startDate)) {
+      alert("La data di fine non può essere prima della data di inizio");
+      return;
+    }
+
     const data: EventFormData = {
       title,
       description,
-      date,
+      startDate,
+      endDate,
       region,
       city,
       category,
@@ -80,7 +95,6 @@ export default function EventForm({
 
   return (
     <Card className="max-w-2xl mx-auto p-5">
-
       <form onSubmit={handleSubmit} className="space-y-6">
 
         {/* HEADER */}
@@ -103,10 +117,19 @@ export default function EventForm({
             required
           />
 
+          {/* 🔥 START DATE */}
           <Input
             type="date"
-            value={date}
-            onChange={(e) => setDate(e.target.value)}
+            value={startDate}
+            onChange={(e) => setStartDate(e.target.value)}
+            required
+          />
+
+          {/* 🔥 END DATE */}
+          <Input
+            type="date"
+            value={endDate}
+            onChange={(e) => setEndDate(e.target.value)}
             required
           />
 
@@ -163,7 +186,7 @@ export default function EventForm({
           required
         />
 
-        {/* EVENT TYPES (CHIPS) */}
+        {/* EVENT TYPES */}
         <div>
           <p className="text-sm font-medium mb-2">Tipi evento</p>
 
@@ -225,3 +248,4 @@ export default function EventForm({
     </Card>
   );
 }
+
